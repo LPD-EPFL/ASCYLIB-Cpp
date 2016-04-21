@@ -8,14 +8,26 @@ extern "C" {
 #include"rapl_read.h"
 #include"ssmem.h"
 }
-//#include"linkedlist_lazy.h"
+#include"linkedlist_lazy.h"
 //#include"linkedlist_lazy_cache.h"
-//#include"linkedlist_copy.h"
+#include"linkedlist_copy.h"
 #include"linkedlist_coupling.h"
-//#include"linkedlist_harris.h"
-//#include"linkedlist_harris_opt.h"
+#include"linkedlist_harris.h"
+#include"linkedlist_harris_opt.h"
 
 #define ASSERT_SIZE 1
+
+// When adding here, also add in the help section
+// and argument processing
+// Line 356
+enum algorithms {
+	LL_LAZY,
+	LL_COPY,
+	LL_COUPLING,
+	LL_HARRIS,
+	LL_HARRIS_OPT
+};
+algorithms algorithm; 
 
 extern __thread ssmem_allocator_t* alloc;
 
@@ -277,6 +289,7 @@ int main(int argc, char**argv)
 	set_cpu(0);
 	//ssalloc_init();
 	seeds = seed_rand();
+	algorithm = LL_COPY;
 
 	RR_INIT_ALL();
 	
@@ -291,6 +304,7 @@ int main(int argc, char**argv)
 		{"num-buckets",               required_argument, NULL, 'b'},
 		{"print-vals",                required_argument, NULL, 'v'},
 		{"vals-pf",                   required_argument, NULL, 'f'},
+		{"algorithm",                 required_argument, NULL, 'a'},
 		{NULL, 0, NULL, 0}
 	};
 	
@@ -339,6 +353,11 @@ int main(int argc, char**argv)
 			"        When using detailed profiling, how many values to print.\n"
 			"  -f, --val-pf <int>\n"
 			"        When using detailed profiling, how many values to keep track of.\n"
+			"  -a, --algorithm <name>\n"
+			"        What algorithm to use (LL_LAZY by default).\n"
+			"        Possible options:\n"
+			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
+			"\n"
 			, argv[0]);
 			exit(0);
 		case 'd':
@@ -372,6 +391,18 @@ int main(int argc, char**argv)
 		case 'f':
 			pf_vals_num = pow2roundup(atoi(optarg)) - 1;
 			break;
+		case 'a':
+			if (!strncmp(optarg,"LL_COPY",8)) {
+				algorithm = LL_COPY;
+			} else if (!strncmp(optarg,"LL_COUPLING",12)) {
+				algorithm = LL_COUPLING;
+			} else if (!strncmp(optarg,"LL_HARRIS",10)) {
+				algorithm = LL_COPY;
+			} else if (!strncmp(optarg,"LL_HARRIS_OPT",14)) {
+				algorithm = LL_COPY;
+			} else {
+				algorithm = LL_LAZY;
+			}
 		case '?':
 		default:
 			printf("Use -h or --help for help\n");
@@ -419,13 +450,19 @@ int main(int argc, char**argv)
 
 	stop = 0;
 
-	Search<skey_t, sval_t> *set =
-		//new LinkedListLazy<skey_t,sval_t>();
+	Search<skey_t, sval_t> *set;
+	if (algorithm == LL_COPY) {
+		set = new LinkedListCopy<skey_t,sval_t>();
+	} else if (algorithm == LL_COUPLING) {
+		set = new LinkedListCoupling<skey_t,sval_t>();
+	} else if (algorithm == LL_HARRIS) {
+		set = new LinkedListHarris<skey_t, sval_t>();
+	} else if (algorithm == LL_HARRIS_OPT) {
+		set = new LinkedListHarrisOpt<skey_t, sval_t>();
+	} else {
+		set = new LinkedListLazy<skey_t,sval_t>();
+	}
 		//new LinkedListLazyCache<skey_t,sval_t>();
-		//new LinkedListCopy<skey_t,sval_t>();
-		new LinkedListCoupling<skey_t,sval_t>();
-		//new LinkedListHarris<skey_t, sval_t>();
-		//new LinkedListHarrisOpt<skey_t, sval_t>();
 	assert( set != NULL );
 
 	/* Initializes the local data */

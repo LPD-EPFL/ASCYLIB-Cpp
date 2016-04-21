@@ -5,7 +5,7 @@
 #include<stdlib.h>
 #include<lock_if.h>
 
-__thread ssmem_allocator_t* alloc;
+extern __thread ssmem_allocator_t* alloc;
 
 template<typename K, typename V>
 /* typedef volatile*/ struct node_ll_marked

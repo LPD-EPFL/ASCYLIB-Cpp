@@ -1,10 +1,10 @@
 #ifndef __LINKED_LIST_COPY_H__
 #define __LINKED_LIST_COPY_H__
 
-extern "C" {
 #include<assert.h>
 #include<pthread.h>
 #include<stdlib.h>
+extern "C" {
 #include"lock_if.h"
 #include"ssmem.h"
 }
@@ -16,7 +16,7 @@ extern "C" {
 #define CPY_ON_WRITE_READ_ONLY_FAIL     RO_FAIL
 #define CPY_ON_WRITE_USE_MEM_RELEAS     1
 
-__thread ssmem_allocator_t* alloc;
+extern __thread ssmem_allocator_t* alloc;
 
 template <typename K, typename V>
 class LinkedListCopy : public Search<K,V> {

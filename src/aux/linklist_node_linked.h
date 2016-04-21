@@ -4,7 +4,7 @@
 #include<stdlib.h>
 #include<malloc.h>
 
-__thread ssmem_allocator_t* alloc;
+extern __thread ssmem_allocator_t* alloc;
 
 template <typename K, typename V>
 struct node_ll_linked {
