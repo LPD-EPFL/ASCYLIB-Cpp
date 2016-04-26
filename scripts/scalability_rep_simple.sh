@@ -59,7 +59,7 @@ print_rep "#cores  " $num_algos "throughput   " "\n"
 
 printf "%-8d" 1;
 thr1="";
-for algo in $algo;
+for algo in $algos;
 do
     thr=$($run_script ./bin/test -a $algo $params -n1);
     thr1="$thr1 $thr";
