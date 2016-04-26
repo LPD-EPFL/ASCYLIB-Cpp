@@ -22,7 +22,7 @@ private:
 	/*
 	 * The five following functions handle the low-order mark bit that indicates
 	 * whether a node is logically deleted (1) or not (0).
-	 *  - is_marked_ref returns whether it is marked, 
+	 *  - is_marked_ref returns whether it is marked,
 	 *  - (un)set_marked changes the mark,
 	 *  - get_(un)marked_ref sets the mark before returning the node.
 	 */
@@ -98,8 +98,8 @@ private:
 #if GC==1
 				volatile node_ll_linked<K,V> *cur = left_node_next;
 				do {
-					volatile node_ll_linked<K,V> *node_to_free = 
-						cur;
+					volatile node_ll_linked<K,V>
+						*node_to_free = cur;
 					cur = (volatile node_ll_linked<K,V> *)
 						get_unmarked_ref((long) cur->next);
 					ssmem_free(alloc, (void*)node_to_free);
@@ -183,15 +183,15 @@ private:
 			}
 		} while(1);
 		if (likely(ATOMIC_CAS_MB(&left_node->next, right_node,
-			right_node_next))) {   
+			right_node_next))) {
 #if GC == 1
 			ssmem_free(alloc,
 				(void*) get_unmarked_ref((long) right_node));
 #endif
-		;   
-		} else {   
+		;
+		} else {
 			harris_search(key, &left_node);
-		}   
+		}
 
 		return ret;
 
@@ -199,7 +199,7 @@ private:
 
 public:
 	LinkedListHarris()
-	{   
+	{
 		volatile node_ll_linked<K,V> *min, *max;
 
 		head = (volatile node_ll_linked<K,V> *)
@@ -216,7 +216,7 @@ public:
 	}
 
 	~LinkedListHarris()
-	{   
+	{
 		volatile node_ll_linked<K,V> *node, *next;
 		node = head;
 
@@ -225,7 +225,7 @@ public:
 			free( (void*) node);
 			node = next;
 		}
-	}  
+	}
 
 	V search(K key)
 	{

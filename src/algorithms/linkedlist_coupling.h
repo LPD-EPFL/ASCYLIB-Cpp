@@ -50,7 +50,7 @@ public:
 	{
 		PARSE_TRY();
 
-		volatile node_ll_marked<K,V> *curr, *next; 
+		volatile node_ll_marked<K,V> *curr, *next;
 		V res = (V)0;
 
 		GL_LOCK(lock); /* when GL_[UN]LOCK is defined the [UN]LOCK is not ;-) */
@@ -59,17 +59,15 @@ public:
 		LOCK(ND_GET_LOCK(curr->next));
 		next = curr->next;
 
-		while (next->key < key) 
-		{   
+		while (next->key < key) {
 			UNLOCK(ND_GET_LOCK(curr));
 			curr = next;
 			LOCK(ND_GET_LOCK(next->next));
 			next = curr->next;
-		}   
-		if (key == next->key)
-		{   
+		}
+		if (key == next->key) {
 			res = next->val;
-		}   
+		}
 		GL_UNLOCK(lock);
 		UNLOCK(ND_GET_LOCK(curr));
 		UNLOCK(ND_GET_LOCK(next));
@@ -90,16 +88,14 @@ public:
 		LOCK(ND_GET_LOCK(curr->next));
 		next = curr->next;
 
-		while (next->key < key)
-		{
+		while (next->key < key) {
 			UNLOCK(ND_GET_LOCK(curr));
 			curr = next;
 			LOCK(ND_GET_LOCK(next->next));
 			next = curr->next;
 		}
 		found = (key == next->key);
-		if (!found)
-		{
+		if (!found) {
 			newnode = initialize_new_marked_ll_node<K,V>(
 					key, val, next);
 #ifdef __tile__
@@ -127,23 +123,23 @@ public:
 		LOCK(ND_GET_LOCK(curr->next));
 		next = curr->next;
 
-		while (next->key < key) {   
+		while (next->key < key) {
 			UNLOCK(ND_GET_LOCK(curr));
 			curr = next;
 			LOCK(ND_GET_LOCK(next->next));
 			next = next->next;
-		}   
+		}
 
-		if (key == next->key) {   
+		if (key == next->key) {
 			res = next->val;
 			curr->next = next->next;
 			UNLOCK(ND_GET_LOCK(next));
 			node_ll_marked_delete<K,V>(next);
 			UNLOCK(ND_GET_LOCK(curr));
-		} else {   
+		} else {
 			UNLOCK(ND_GET_LOCK(curr));
 			UNLOCK(ND_GET_LOCK(next));
-		}   
+		}
 		GL_UNLOCK(lock);
 
 		return res;

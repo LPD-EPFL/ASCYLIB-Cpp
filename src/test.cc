@@ -27,7 +27,7 @@ enum algorithms {
 	LL_HARRIS,
 	LL_HARRIS_OPT
 };
-algorithms algorithm; 
+algorithms algorithm;
 
 extern __thread ssmem_allocator_t* alloc;
 
@@ -292,7 +292,7 @@ int main(int argc, char**argv)
 	algorithm = LL_COPY;
 
 	RR_INIT_ALL();
-	
+
 	struct option long_options[] = {
 		{"help",                      no_argument,       NULL, 'h'},
 		{"verbose",                   no_argument,       NULL, 'e'},
@@ -307,11 +307,11 @@ int main(int argc, char**argv)
 		{"algorithm",                 required_argument, NULL, 'a'},
 		{NULL, 0, NULL, 0}
 	};
-	
+
 	int i,c;
 	while(1) {
 		i=0;
-		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:m:el:p:b:v:f:x:",
+		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:m:el:p:b:v:f:x:a:",
 			long_options, &i);
 		if (c==-1) {
 			break;
@@ -403,9 +403,10 @@ int main(int argc, char**argv)
 			} else {
 				algorithm = LL_LAZY;
 			}
+			break;
 		case '?':
 		default:
-			printf("Use -h or --help for help\n");
+			printf("Unknown option %c. Use -h or --help for help.\n",c);
 			exit(1);
 		}
 	}
@@ -490,7 +491,7 @@ int main(int argc, char**argv)
 	/* Initialize and set thread detached attribute */
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	
+
 	thread_data_t* tds = (thread_data_t*) malloc(num_threads * sizeof(thread_data_t));
 
 	unsigned long t;
