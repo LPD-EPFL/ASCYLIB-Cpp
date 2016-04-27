@@ -23,7 +23,7 @@ class LinkedListLazy : public Search<K,V>
 #if defined(LL_GLOBAL_LOCK)
 	volatile ptlock_t *lock;
 #endif
-	
+
 	inline int parse_validate(volatile node_ll_marked<K,V> *pred,
 			volatile node_ll_marked<K,V> *curr)
 	{
@@ -152,7 +152,7 @@ class LinkedListLazy : public Search<K,V>
 				}
 				done = 1;
 			}
-			
+
 			GL_UNLOCK(lock);
 			UNLOCK(ND_GET_LOCK(curr));
 			UNLOCK(ND_GET_LOCK(pred));
@@ -160,7 +160,7 @@ class LinkedListLazy : public Search<K,V>
 
 		return result;
 	}
-	
+
 	int length()
 	{
 		int count = 0;

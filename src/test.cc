@@ -394,14 +394,19 @@ int main(int argc, char**argv)
 		case 'a':
 			if (!strncmp(optarg,"LL_COPY",8)) {
 				algorithm = LL_COPY;
+				printf("Using LL_COPY\n");
 			} else if (!strncmp(optarg,"LL_COUPLING",12)) {
 				algorithm = LL_COUPLING;
+				printf("Using LL_COUPLING\n");
 			} else if (!strncmp(optarg,"LL_HARRIS",10)) {
-				algorithm = LL_COPY;
+				algorithm = LL_HARRIS;
+				printf("Using LL_HARRIS\n");
 			} else if (!strncmp(optarg,"LL_HARRIS_OPT",14)) {
-				algorithm = LL_COPY;
+				algorithm = LL_HARRIS_OPT;
+				printf("Using LL_HARRIS_OPT\n");
 			} else {
 				algorithm = LL_LAZY;
+				printf("Using LL_COPY\n");
 			}
 			break;
 		case '?':
