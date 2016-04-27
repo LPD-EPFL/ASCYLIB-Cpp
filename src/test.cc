@@ -289,7 +289,7 @@ int main(int argc, char**argv)
 	set_cpu(0);
 	//ssalloc_init();
 	seeds = seed_rand();
-	algorithm = LL_COPY;
+	algorithm = LL_LAZY;
 
 	RR_INIT_ALL();
 
@@ -406,7 +406,7 @@ int main(int argc, char**argv)
 				printf("Using LL_HARRIS_OPT\n");
 			} else {
 				algorithm = LL_LAZY;
-				printf("Using LL_COPY\n");
+				printf("Using LL_LAZY\n");
 			}
 			break;
 		case '?':
