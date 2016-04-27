@@ -29,7 +29,7 @@ enum algorithms {
 };
 algorithms algorithm;
 
-extern __thread ssmem_allocator_t* alloc;
+__thread ssmem_allocator_t* alloc;
 
 size_t array_ll_fixed_size = DEFAULT_RANGE;
 size_t initial = DEFAULT_INITIAL;

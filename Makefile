@@ -4,7 +4,7 @@
 TEST_FILE := test
 SEARCH_HEADER_FILE := search.h
 ALGORITHMS := linkedlist_copy
-GC := 0
+GC := 1
 
 SRC_DIR := src
 BIN_DIR := bin

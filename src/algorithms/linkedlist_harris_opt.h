@@ -1,8 +1,8 @@
 #ifndef _LINKEDLIST_HARRIS_OPT_H_
 #define _LINKEDLIST_HARRIS_OPT_H_
 
-extern "C" {
 #include<stdlib.h>
+extern "C" {
 #include "ssmem.h"
 #include "atomic_ops.h"
 }
@@ -22,7 +22,7 @@ private:
 	/*
 	 * The five following functions handle the low-order mark bit that indicates
 	 * whether a node is logically deleted (1) or not (0).
-	 *  - is_marked_ref returns whether it is marked, 
+	 *  - is_marked_ref returns whether it is marked,
 	 *  - (un)set_marked changes the mark,
 	 *  - get_(un)marked_ref sets the mark before returning the node.
 	 */
@@ -58,8 +58,8 @@ private:
 		/* return set_mark(w); */
 		return w | 0x1L;
 	}
-	
-	inline int physical_delete_right(volatile node_ll_linked<K,V> *left_node,
+
+	static inline int physical_delete_right(volatile node_ll_linked<K,V> *left_node,
 			volatile node_ll_linked<K,V> *right_node)
 	{
 		volatile node_ll_linked<K,V> *new_next =
@@ -76,7 +76,7 @@ private:
 		return removed;
 	}
 
-	inline volatile node_ll_linked<K,V> *list_search(K key,
+	static inline volatile node_ll_linked<K,V> *list_search(K key,
 			volatile node_ll_linked<K,V> **left_node_ptr)
 	{
 		PARSE_TRY();
