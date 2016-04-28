@@ -1,8 +1,8 @@
 #ifndef _LINKEDLIST_HARRIS_H_
 #define _LINKEDLIST_HARRIS_H_
 
-extern "C" {
 #include<stdlib.h>
+extern "C" {
 #include "ssmem.h"
 #include "atomic_ops.h"
 }
@@ -10,8 +10,6 @@ extern "C" {
 #include "search.h"
 #include "key_max_min.h"
 #include "linklist_node_linked.h"
-
-#define LOCKFREE
 
 template<typename K, typename V,
 	typename K_MAX_MIN = KeyMaxMin<K> >
@@ -230,62 +228,21 @@ public:
 	V search(K key)
 	{
 		V result = (V)0;
-#ifdef SEQUENTIAL
-		volatile node_ll_linked<K,V> *prev, *next;
-		prev = head;
-		next = prev->next;
-		while (next->key < key) {
-			prev = next;
-			next = prev->next;
-		}
-		result = (next->key == key) ? next->val : 0;
-#elif defined LOCKFREE
 		result = harris_find(key);
-#endif
 		return result;
 	}
 
 	int insert(K key, V val)
 	{
 		int success = 0;
-#ifdef SEQUENTIAL
-		volatile node_ll_linked<K,V> *prev, *next;
-		prev = head;
-		next = prev->head;
-		while (next->key < key) {
-			prev = next;
-			next = prev->next;
-		}
-		success = (next->key != key);
-		if (success) {
-			prev->next = allocate_node_ll_linked<K,V>(key, val, next);
-		}
-#elif defined LOCKFREE
 		success = harris_insert(key,val);
-#endif
 		return success;
 	}
 
 	V remove(K key)
 	{
 		V result = 0;
-
-#ifdef SEQUENTIAL
-		volatile node_ll_linked<K,V> *prev, *next;
-		prev = head;
-		next = prev->next;
-		while (next->key < key) {
-			prev = next;
-			next = prev->next;
-		}
-		result = (next->key == key) ? next->val : 0;
-		if (result) {
-			prev->next = next->next;
-			free(next);
-		}
-#elif defined LOCKFREE
 		result = harris_remove(key);
-#endif
 		return result;
 	}
 
