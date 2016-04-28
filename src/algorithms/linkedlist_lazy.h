@@ -55,7 +55,7 @@ class LinkedListLazy : public Search<K,V>
 		curr = head;
 		while (NULL != curr) {
 			next = curr->next;
-			node_ll_marked_delete( curr );
+			node_ll_marked_delete<K,V>( curr );
 			curr = next;
 		}
 	}

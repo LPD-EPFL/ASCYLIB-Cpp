@@ -14,6 +14,7 @@ extern "C" {
 #include"linkedlist_coupling.h"
 #include"linkedlist_harris.h"
 #include"linkedlist_harris_opt.h"
+#include"linkedlist_optik_gl.h"
 
 #define ASSERT_SIZE 1
 
@@ -25,7 +26,8 @@ enum algorithms {
 	LL_COPY,
 	LL_COUPLING,
 	LL_HARRIS,
-	LL_HARRIS_OPT
+	LL_HARRIS_OPT,
+	LL_OPTIK
 };
 algorithms algorithm;
 
@@ -404,6 +406,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"LL_HARRIS_OPT",14)) {
 				algorithm = LL_HARRIS_OPT;
 				printf("Using LL_HARRIS_OPT\n");
+			} else if (!strncmp(optarg,"LL_OPTIK",14)) {
+				algorithm = LL_OPTIK;
+				printf("Using LL_OPTIK\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -465,6 +470,8 @@ int main(int argc, char**argv)
 		set = new LinkedListHarris<skey_t, sval_t>();
 	} else if (algorithm == LL_HARRIS_OPT) {
 		set = new LinkedListHarrisOpt<skey_t, sval_t>();
+	} else if (algorithm == LL_OPTIK) {
+		set = new LinkedListOptikGL<skey_t, sval_t>();
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
