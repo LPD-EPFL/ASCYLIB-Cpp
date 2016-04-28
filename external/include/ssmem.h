@@ -1,4 +1,4 @@
-/*   
+/*
  *   File: ssmem.h
  *   Author: Vasileios Trigonakis <vasileios.trigonakis@epfl.ch>
  *   Description: ssmem interface and structures
@@ -181,12 +181,12 @@ void ssmem_alloc_term(ssmem_allocator_t* a);
 /*inline */void ssmem_free(ssmem_allocator_t* a, void* obj);
 
 /* release some memory to the OS using allocator a */
-inline void ssmem_release(ssmem_allocator_t* a, void* obj);
+/*inline*/ void ssmem_release(ssmem_allocator_t* a, void* obj);
 
 /* increment the thread-local activity counter. Invoking this function suggests that
  no memory references to ssmem-allocated memory are held by the current thread beyond
 this point. */
-inline void ssmem_ts_next();
+/*inline*/ void ssmem_ts_next();
 #define SSMEM_SAFE_TO_RECLAIM() ssmem_ts_next()
 
 
