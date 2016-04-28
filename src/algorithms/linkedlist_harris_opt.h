@@ -11,8 +11,6 @@ extern "C" {
 #include "key_max_min.h"
 #include "linklist_node_linked.h"
 
-#define LOCKFREE
-
 template<typename K, typename V,
 	typename K_MAX_MIN = KeyMaxMin<K> >
 class LinkedListHarrisOpt: public Search<K,V>
@@ -59,7 +57,7 @@ private:
 		return w | 0x1L;
 	}
 
-	static inline int physical_delete_right(volatile node_ll_linked<K,V> *left_node,
+	inline int physical_delete_right(volatile node_ll_linked<K,V> *left_node,
 			volatile node_ll_linked<K,V> *right_node)
 	{
 		volatile node_ll_linked<K,V> *new_next =
@@ -76,7 +74,7 @@ private:
 		return removed;
 	}
 
-	static inline volatile node_ll_linked<K,V> *list_search(K key,
+	inline volatile node_ll_linked<K,V> *list_search(K key,
 			volatile node_ll_linked<K,V> **left_node_ptr)
 	{
 		PARSE_TRY();
@@ -155,7 +153,7 @@ private:
 			}
 			unmarked_ref = (volatile node_ll_linked<K,V> *)
 				get_unmarked_ref((long)right_node->next);
-			volatile node_ll_linked<K,V> *marked_ref = 
+			volatile node_ll_linked<K,V> *marked_ref =
 				(volatile node_ll_linked<K,V> *)
 						get_marked_ref((long)unmarked_ref);
 			cas_result = (volatile node_ll_linked<K,V> *)
@@ -201,62 +199,21 @@ public:
 	V search(K key)
 	{
 		V result = (V)0;
-#ifdef SEQUENTIAL
-		volatile node_ll_linked<K,V> *prev, *next;
-		prev = head;
-		next = prev->next;
-		while (next->key < key) {
-			prev = next;
-			next = prev->next;
-		}
-		result = (next->key == key) ? next->val : 0;
-#elif defined LOCKFREE
 		result = harris_find(key);
-#endif
 		return result;
 	}
 
 	int insert(K key, V val)
 	{
 		int success = 0;
-#ifdef SEQUENTIAL
-		volatile node_ll_linked<K,V> *prev, *next;
-		prev = head;
-		next = prev->head;
-		while (next->key < key) {
-			prev = next;
-			next = prev->next;
-		}
-		success = (next->key != key);
-		if (success) {
-			prev->next = allocate_node_ll_linked<K,V>(key, val, next);
-		}
-#elif defined LOCKFREE
 		success = harris_insert(key,val);
-#endif
 		return success;
 	}
 
 	V remove(K key)
 	{
 		V result = 0;
-
-#ifdef SEQUENTIAL
-		volatile node_ll_linked<K,V> *prev, *next;
-		prev = head;
-		next = prev->next;
-		while (next->key < key) {
-			prev = next;
-			next = prev->next;
-		}
-		result = (next->key == key) ? next->val : 0;
-		if (result) {
-			prev->next = next->next;
-			free(next);
-		}
-#elif defined LOCKFREE
 		result = harris_remove(key);
-#endif
 		return result;
 	}
 
