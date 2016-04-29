@@ -200,17 +200,12 @@ public:
 	{
 		volatile ll_simple<K,V> *min, *max;
 
-		head = (volatile ll_simple<K,V> *)
-		malloc(sizeof(ll_simple<K,V>));
-		if (NULL == head) {
-			perror("malloc at LinkedListHarris constructor");
-			exit(1);
-		}
 		max = initialize_ll_simple<K,V>(
 			K_MAX_MIN::max_value(), 0, NULL);
 		min = initialize_ll_simple<K,V>(
 			K_MAX_MIN::min_value(), 0, max);
 		head = min;
+		MEM_BARRIER;
 	}
 
 	~LinkedListHarris()
