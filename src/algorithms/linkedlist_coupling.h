@@ -19,9 +19,9 @@ public:
 	LinkedListCoupling()
 	{
 		volatile ll_marked<K,V> *min, *max;
-		max =  initialize_new_marked_ll_node(K_MAX_MIN::max_value(),
+		max =  initialize_ll_marked(K_MAX_MIN::max_value(),
 			(V) 0, (volatile ll_marked<K,V> *)NULL);
-		min = initialize_new_marked_ll_node(K_MAX_MIN::min_value(),
+		min = initialize_ll_marked(K_MAX_MIN::min_value(),
 			(V) 0, max);
 		head = min;
 #if defined(LL_GLOBAL_LOCK)
@@ -96,7 +96,7 @@ public:
 		}
 		found = (key == next->key);
 		if (!found) {
-			newnode = initialize_new_marked_ll_node<K,V>(
+			newnode = initialize_ll_marked<K,V>(
 					key, val, next);
 #ifdef __tile__
 			MEM_BARRIER;

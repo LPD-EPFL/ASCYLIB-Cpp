@@ -27,7 +27,7 @@ struct ll_marked_cache
 };
 
 template<typename K, typename V>
-volatile ll_marked<K,V>* allocate_new_marked_ll_node(K key, V value,
+volatile ll_marked<K,V>* allocate_ll_marked(K key, V value,
 		volatile ll_marked<K,V> *next)
 {
 	volatile ll_marked<K,V> *new_node;
@@ -39,7 +39,7 @@ volatile ll_marked<K,V>* allocate_new_marked_ll_node(K key, V value,
 		malloc(sizeof(ll_marked<K,V>));
 #endif
 	if (new_node==NULL) {
-		perror("malloc @ allocate_new_marked_ll_node");
+		perror("malloc @ allocate_ll_marked");
 		exit(1);
 	}
 	new_node->key = key;
@@ -56,12 +56,13 @@ volatile ll_marked<K,V>* allocate_new_marked_ll_node(K key, V value,
 }
 
 template<typename K, typename V>
-volatile ll_marked<K,V>* initialize_new_marked_ll_node(K key, V value, volatile ll_marked<K,V> *next)
+volatile ll_marked<K,V>* initialize_ll_marked(
+		K key, V value, volatile ll_marked<K,V> *next)
 {
 	volatile ll_marked<K,V> *new_node;
 	new_node = (volatile ll_marked<K,V> *) malloc(sizeof(ll_marked<K,V>));
 	if (new_node==NULL) {
-		perror("malloc @ initialize_new_marked_ll_node");
+		perror("malloc @ initialize_ll_marked");
 		exit(1);
 	}
 	new_node->key = key;
