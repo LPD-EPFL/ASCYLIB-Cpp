@@ -9,7 +9,7 @@ extern "C" {
 #include"ssmem.h"
 }
 #include"search.h"
-#include"linklist_node_simple.h"
+#include"ll_array.h"
 #define DEFAULT_ALTERNATE               0
 #define DEFAULT_EFFECTIVE               1
 
