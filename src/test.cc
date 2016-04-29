@@ -16,12 +16,13 @@ extern "C" {
 #include"linkedlist_harris_opt.h"
 #include"linkedlist_optik_gl.h"
 #include"linkedlist_pugh.h"
+#include"linkedlist_seq.h"
 
 #define ASSERT_SIZE 1
 
 // When adding here, also add in the help section
 // and argument processing
-// Line 356
+// Line 366
 enum algorithms {
 	LL_LAZY,
 	LL_COPY,
@@ -29,7 +30,8 @@ enum algorithms {
 	LL_HARRIS,
 	LL_HARRIS_OPT,
 	LL_OPTIK,
-	LL_PUGH
+	LL_PUGH,
+	LL_SEQ
 };
 algorithms algorithm;
 
@@ -361,7 +363,7 @@ int main(int argc, char**argv)
 			"        What algorithm to use (LL_LAZY by default).\n"
 			"        Possible options:\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
-			"        LL_OPTIK, LL_PUGH\n"
+			"        LL_OPTIK, LL_PUGH, LL_SEQ\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -415,6 +417,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"LL_PUGH",8)) {
 				algorithm = LL_PUGH;
 				printf("Using LL_PUGH\n");
+			} else if (!strncmp(optarg,"LL_SEQ",7)) {
+				algorithm = LL_SEQ;
+				printf("Using LL_SEQ\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -480,6 +485,8 @@ int main(int argc, char**argv)
 		set = new LinkedListOptikGL<skey_t, sval_t>();
 	} else if (algorithm == LL_PUGH) {
 		set = new LinkedListPugh<skey_t, sval_t>();
+	} else if (algorithm == LL_SEQ) {
+		set = new LinkedListSeq<skey_t, sval_t>();
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
