@@ -2,7 +2,7 @@
 #define _LINKED_LIST_LAZY_H_
 
 #include "search.h"
-#include "linklist_node_marked.h"
+#include "ll_marked.h"
 #include "key_max_min.h"
 extern "C" {
 #include "lock_if.h"
@@ -19,13 +19,13 @@ template <typename K, typename V,
 class LinkedListLazy : public Search<K,V>
 {
 	private:
-	volatile node_ll_marked<K,V> *head;
+	volatile ll_marked<K,V> *head;
 #if defined(LL_GLOBAL_LOCK)
 	volatile ptlock_t *lock;
 #endif
 
-	inline int parse_validate(volatile node_ll_marked<K,V> *pred,
-			volatile node_ll_marked<K,V> *curr)
+	inline int parse_validate(volatile ll_marked<K,V> *pred,
+			volatile ll_marked<K,V> *curr)
 	{
 		return (!pred->marked && !curr->marked && pred->next == curr);
 	}
@@ -33,9 +33,9 @@ class LinkedListLazy : public Search<K,V>
 	public:
 	LinkedListLazy()
 	{
-		volatile node_ll_marked<K,V> *min, *max;
+		volatile ll_marked<K,V> *min, *max;
 		max =  initialize_new_marked_ll_node(K_MAX_MIN::max_value(),
-				(V) 0, (volatile node_ll_marked<K,V> *)NULL);
+				(V) 0, (volatile ll_marked<K,V> *)NULL);
 		min = initialize_new_marked_ll_node(K_MAX_MIN::min_value(),
 				(V) 0, max);
 		head = min;
@@ -51,11 +51,11 @@ class LinkedListLazy : public Search<K,V>
 	}
 	~LinkedListLazy()
 	{
-		volatile node_ll_marked<K,V> *curr, *next;
+		volatile ll_marked<K,V> *curr, *next;
 		curr = head;
 		while (NULL != curr) {
 			next = curr->next;
-			node_ll_marked_delete<K,V>( curr );
+			ll_marked_delete<K,V>( curr );
 			curr = next;
 		}
 	}
@@ -63,7 +63,7 @@ class LinkedListLazy : public Search<K,V>
 	V search(K key)
 	{
 		PARSE_TRY();
-		volatile node_ll_marked<K,V>* curr = head;
+		volatile ll_marked<K,V>* curr = head;
 		while (curr->key < key) {
 			curr = curr->next;
 		}
@@ -77,7 +77,7 @@ class LinkedListLazy : public Search<K,V>
 	}
 	int insert(K key, V value)
 	{
-		volatile node_ll_marked<K,V> *curr, *pred, *newnode;
+		volatile ll_marked<K,V> *curr, *pred, *newnode;
 		int result = -1;
 		do {
 			PARSE_TRY();
@@ -119,7 +119,7 @@ class LinkedListLazy : public Search<K,V>
 
 	V remove(K key)
 	{
-		volatile node_ll_marked<K,V> *pred, *curr;
+		volatile ll_marked<K,V> *pred, *curr;
 		V result = 0;
 		int done = 0;
 
@@ -144,11 +144,11 @@ class LinkedListLazy : public Search<K,V>
 			if (parse_validate(pred, curr)) {
 				if (key == curr->key) {
 					result = curr->val;
-					volatile node_ll_marked<K,V> *c_next = curr->next;
+					volatile ll_marked<K,V> *c_next = curr->next;
 					curr->marked = 1;
 					pred->next = c_next;
 
-					node_ll_marked_release(curr);
+					ll_marked_release(curr);
 				}
 				done = 1;
 			}
@@ -164,7 +164,7 @@ class LinkedListLazy : public Search<K,V>
 	int length()
 	{
 		int count = 0;
-		volatile node_ll_marked<K,V> *tmp;
+		volatile ll_marked<K,V> *tmp;
 
 		tmp = head->next;
 		while(tmp->next != NULL) {

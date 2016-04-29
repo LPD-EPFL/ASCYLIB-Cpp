@@ -3,14 +3,14 @@
 
 #include "key_max_min.h"
 #include "search.h"
-#include "linklist_node_marked.h"
+#include "ll_marked.h"
 
 template<typename K, typename V,
 	typename K_MAX_MIN = KeyMaxMin<K> >
 class LinkedListCoupling : public Search<K,V>
 {
 private:
-	volatile node_ll_marked<K,V> *head;
+	volatile ll_marked<K,V> *head;
 #if defined(LL_GLOBAL_LOCK)
 	volatile ptlock_t *lock;
 #endif
@@ -18,9 +18,9 @@ private:
 public:
 	LinkedListCoupling()
 	{
-		volatile node_ll_marked<K,V> *min, *max;
+		volatile ll_marked<K,V> *min, *max;
 		max =  initialize_new_marked_ll_node(K_MAX_MIN::max_value(),
-			(V) 0, (volatile node_ll_marked<K,V> *)NULL);
+			(V) 0, (volatile ll_marked<K,V> *)NULL);
 		min = initialize_new_marked_ll_node(K_MAX_MIN::min_value(),
 			(V) 0, max);
 		head = min;
@@ -37,11 +37,11 @@ public:
 
 	~LinkedListCoupling()
 	{
-		volatile node_ll_marked<K,V> *curr, *next;
+		volatile ll_marked<K,V> *curr, *next;
 		curr = head;
 		while (NULL != curr) {
 			next = curr->next;
-			node_ll_marked_delete( curr );
+			ll_marked_delete( curr );
 			curr = next;
 		}
 	}
@@ -50,7 +50,7 @@ public:
 	{
 		PARSE_TRY();
 
-		volatile node_ll_marked<K,V> *curr, *next;
+		volatile ll_marked<K,V> *curr, *next;
 		V res = (V)0;
 
 		GL_LOCK(lock); /* when GL_[UN]LOCK is defined the [UN]LOCK is not ;-) */
@@ -79,7 +79,7 @@ public:
 		PARSE_TRY();
 		UPDATE_TRY();
 
-		volatile node_ll_marked<K,V> *curr, *next, *newnode;
+		volatile ll_marked<K,V> *curr, *next, *newnode;
 		int found;
 
 		GL_LOCK(lock);           /* when GL_[UN]LOCK is defined the [UN]LOCK is not ;-) */
@@ -114,7 +114,7 @@ public:
 		PARSE_TRY();
 		UPDATE_TRY();
 
-		volatile node_ll_marked<K,V> *curr, *next;
+		volatile ll_marked<K,V> *curr, *next;
 		V res = (V)0;
 
 		GL_LOCK(lock); /* when GL_[UN]LOCK is defined the [UN]LOCK is not ;-) */
@@ -134,7 +134,7 @@ public:
 			res = next->val;
 			curr->next = next->next;
 			UNLOCK(ND_GET_LOCK(next));
-			node_ll_marked_delete<K,V>(next);
+			ll_marked_delete<K,V>(next);
 			UNLOCK(ND_GET_LOCK(curr));
 		} else {
 			UNLOCK(ND_GET_LOCK(curr));
@@ -150,7 +150,7 @@ public:
 	{
 		int size = 0;
 
-		volatile node_ll_marked<K,V> *node;
+		volatile ll_marked<K,V> *node;
 		node = head->next;
 		while(node->next != NULL) {
 			size++;

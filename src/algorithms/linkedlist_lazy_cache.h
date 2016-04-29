@@ -2,7 +2,7 @@
 #define _LINKED_LIST_LAZY_CACHE_H_
 
 #include "search.h"
-#include "linklist_node_marked.h"
+#include "ll_marked.h"
 #include "key_max_min.h"
 extern "C" {
 #include "latency.h"
@@ -21,14 +21,14 @@ template <typename K, typename V,
 class LinkedListLazyCache : public Search<K,V>
 {
 	private:
-	volatile node_ll_marked<K,V> *head;
+	volatile ll_marked<K,V> *head;
 #if defined(LL_GLOBAL_LOCK)
 	volatile ptlock_t *lock;
 #endif
-	__thread node_ll_marked_cache<K,V> node_last = {0,NULL};
-	
-	inline int parse_validate(volatile node_ll_marked<K,V> *pred,
-			volatile node_ll_marked<K,V> *curr)
+	__thread ll_marked_cache<K,V> node_last = {0,NULL};
+
+	inline int parse_validate(volatile ll_marked<K,V> *pred,
+			volatile ll_marked<K,V> *curr)
 	{
 		return (!pred->marked && !curr->marked && pred->next == curr);
 	}
@@ -60,7 +60,7 @@ class LinkedListLazyCache : public Search<K,V>
 		return valid;
 	}
 
-	inline void lazy_cache(volatile node_ll_marked<K,V> *pred)
+	inline void lazy_cache(volatile ll_marked<K,V> *pred)
 	{
 		if (pred->key == K_MAX_MIN::min_value()) {
 			pred = pred->next; // next from the MIN value will be head
@@ -71,7 +71,7 @@ class LinkedListLazyCache : public Search<K,V>
 
 	V lazy_find_pes(K key)
 	{
-		volatile node_ll_marked<K,V> *curr, *pred;
+		volatile ll_marked<K,V> *curr, *pred;
 restart:
 		PARSE_TRY();
 		curr = head;
@@ -99,9 +99,9 @@ restart:
 	public:
 	LinkedListLazyCache()
 	{
-		volatile node_ll_marked<K,V> *min, *max;
+		volatile ll_marked<K,V> *min, *max;
 		max =  initialize_new_marked_ll_node(K_MAX_MIN::max_value(),
-				(V) 0, (volatile node_ll_marked<K,V> *)NULL);
+				(V) 0, (volatile ll_marked<K,V> *)NULL);
 		min = initialize_new_marked_ll_node(K_MAX_MIN::min_value(),
 				(V) 0, max);
 		head = min;
@@ -118,11 +118,11 @@ restart:
 	}
 	~LinkedListLazyCache()
 	{
-		volatile node_ll_marked<K,V> *curr, *next;
+		volatile ll_marked<K,V> *curr, *next;
 		curr = head;
 		while (NULL != curr) {
 			next = curr->next;
-			node_ll_marked_delete( curr );
+			ll_marked_delete( curr );
 			curr = next;
 		}
 	}
@@ -130,7 +130,7 @@ restart:
 	V search(K key)
 	{
 		PARSE_TRY();
-		volatile node_ll_marked<K,V>* curr = head;
+		volatile ll_marked<K,V>* curr = head;
 		if (lazy_cache_validate_plus(key)) {
 			NODE_CACHE_HIT();
 			curr = node_last.cached_node;
@@ -151,7 +151,7 @@ restart:
 
 	int insert(K key, V value)
 	{
-		volatile node_ll_marked<K,V> *curr, *pred, *newnode;
+		volatile ll_marked<K,V> *curr, *pred, *newnode;
 		int result = -1;
 		do {
 			PARSE_TRY();
@@ -200,7 +200,7 @@ restart:
 
 	V remove(K key)
 	{
-		volatile node_ll_marked<K,V> *pred, *curr;
+		volatile ll_marked<K,V> *pred, *curr;
 		V result = 0;
 		int done = 0;
 
@@ -231,16 +231,16 @@ restart:
 			if (parse_validate(pred, curr)) {
 				if (key == curr->key) {
 					result = curr->val;
-					volatile node_ll_marked<K,V> *c_next = curr->next;
+					volatile ll_marked<K,V> *c_next = curr->next;
 					curr->marked = 1;
 					pred->next = c_next;
 
-					node_ll_marked_release(curr);
+					ll_marked_release(curr);
 				}
 				done = 1;
 			}
 			lazy_cache(pred);
-			
+
 			GL_UNLOCK(lock);
 			UNLOCK(ND_GET_LOCK(curr));
 			UNLOCK(ND_GET_LOCK(pred));
@@ -248,11 +248,11 @@ restart:
 
 		return result;
 	}
-	
+
 	int length()
 	{
 		int count = 0;
-		volatile node_ll_marked<K,V> *tmp;
+		volatile ll_marked<K,V> *tmp;
 
 		tmp = head->next;
 		while(tmp->next != NULL) {
