@@ -9,14 +9,14 @@ extern "C" {
 
 #include "search.h"
 #include "key_max_min.h"
-#include "linklist_node_linked.h"
+#include "ll_simple.h"
 
 template<typename K, typename V,
 	typename K_MAX_MIN = KeyMaxMin<K> >
 class LinkedListHarrisOpt: public Search<K,V>
 {
 private:
-	volatile node_ll_linked<K,V> *head;
+	volatile ll_simple<K,V> *head;
 	/*
 	 * The five following functions handle the low-order mark bit that indicates
 	 * whether a node is logically deleted (1) or not (0).
@@ -57,13 +57,13 @@ private:
 		return w | 0x1L;
 	}
 
-	inline int physical_delete_right(volatile node_ll_linked<K,V> *left_node,
-			volatile node_ll_linked<K,V> *right_node)
+	inline int physical_delete_right(volatile ll_simple<K,V> *left_node,
+			volatile ll_simple<K,V> *right_node)
 	{
-		volatile node_ll_linked<K,V> *new_next =
-			(volatile node_ll_linked<K,V> *)
+		volatile ll_simple<K,V> *new_next =
+			(volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)right_node->next);
-		volatile node_ll_linked<K,V> *res = CAS_PTR(&left_node->next,
+		volatile ll_simple<K,V> *res = CAS_PTR(&left_node->next,
 				right_node, new_next);
 		int removed = (res == right_node);
 #if GC==1
@@ -74,12 +74,12 @@ private:
 		return removed;
 	}
 
-	inline volatile node_ll_linked<K,V> *list_search(K key,
-			volatile node_ll_linked<K,V> **left_node_ptr)
+	inline volatile ll_simple<K,V> *list_search(K key,
+			volatile ll_simple<K,V> **left_node_ptr)
 	{
 		PARSE_TRY();
-		volatile node_ll_linked<K,V> *left_node = head;
-		volatile node_ll_linked<K,V> *right_node = head->next;
+		volatile ll_simple<K,V> *left_node = head;
+		volatile ll_simple<K,V> *right_node = head->next;
 		while (1) {
 			if (likely(!is_marked_ref((long)right_node->next))) {
 				if (unlikely(right_node->key >= key)) {
@@ -90,7 +90,7 @@ private:
 				CLEANUP_TRY();
 				physical_delete_right(left_node, right_node);
 			}
-			right_node = (volatile node_ll_linked<K,V> *)
+			right_node = (volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)right_node->next);
 		}
 		*left_node_ptr = left_node;
@@ -99,11 +99,11 @@ private:
 
 	V harris_find(K key)
 	{
-		volatile node_ll_linked<K,V> *node = head->next;
+		volatile ll_simple<K,V> *node = head->next;
 		PARSE_TRY();
 
 		while (likely(node->key < key)) {
-			node = (volatile node_ll_linked<K,V> *)
+			node = (volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)node->next);
 		}
 
@@ -117,14 +117,14 @@ private:
 	{
 		do {
 			UPDATE_TRY();
-			volatile node_ll_linked<K,V> *left_node;
-			volatile node_ll_linked<K,V> *right_node = list_search(
+			volatile ll_simple<K,V> *left_node;
+			volatile ll_simple<K,V> *right_node = list_search(
 					key, &left_node);
 			if (right_node->key == key) {
 				return 0;
 			}
-			volatile node_ll_linked<K,V> *node_to_add =
-				allocate_node_ll_linked(key, val, right_node);
+			volatile ll_simple<K,V> *node_to_add =
+				allocate_ll_simple(key, val, right_node);
 #ifdef __tile__
 			MEM_BARRIER;
 #endif
@@ -140,10 +140,10 @@ private:
 
 	V harris_remove(K key)
 	{
-		volatile node_ll_linked<K,V> *cas_result;
-		volatile node_ll_linked<K,V> *unmarked_ref;
-		volatile node_ll_linked<K,V> *left_node;
-		volatile node_ll_linked<K,V> *right_node;
+		volatile ll_simple<K,V> *cas_result;
+		volatile ll_simple<K,V> *unmarked_ref;
+		volatile ll_simple<K,V> *left_node;
+		volatile ll_simple<K,V> *right_node;
 
 		do {
 			UPDATE_TRY();
@@ -151,12 +151,12 @@ private:
 			if (right_node->key != key) {
 				return 0;
 			}
-			unmarked_ref = (volatile node_ll_linked<K,V> *)
+			unmarked_ref = (volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)right_node->next);
-			volatile node_ll_linked<K,V> *marked_ref =
-				(volatile node_ll_linked<K,V> *)
+			volatile ll_simple<K,V> *marked_ref =
+				(volatile ll_simple<K,V> *)
 						get_marked_ref((long)unmarked_ref);
-			cas_result = (volatile node_ll_linked<K,V> *)
+			cas_result = (volatile ll_simple<K,V> *)
 				CAS_PTR(&right_node->next, unmarked_ref,
 						marked_ref);
 		} while(cas_result != unmarked_ref);
@@ -170,23 +170,23 @@ private:
 public:
 	LinkedListHarrisOpt()
 	{
-		volatile node_ll_linked<K,V> *min, *max;
+		volatile ll_simple<K,V> *min, *max;
 
-		head = (volatile node_ll_linked<K,V> *)
-			malloc(sizeof(node_ll_linked<K,V>));
+		head = (volatile ll_simple<K,V> *)
+			malloc(sizeof(ll_simple<K,V>));
 		if (NULL == head) {
 			perror("malloc at LinkedListHarris constructor");
 			exit(1);
 		}
-		max = initialize_node_ll_linked<K,V>(
+		max = initialize_ll_simple<K,V>(
 				K_MAX_MIN::max_value(), 0, NULL);
-		min = initialize_node_ll_linked<K,V>(
+		min = initialize_ll_simple<K,V>(
 				K_MAX_MIN::min_value(), 0, max);
 		head = min;
 	}
 	~LinkedListHarrisOpt()
 	{
-		volatile node_ll_linked<K,V> *node, *next;
+		volatile ll_simple<K,V> *node, *next;
 		node = head;
 
 		while (node!=NULL) {
@@ -220,14 +220,14 @@ public:
 	int length()
 	{
 		int size = 0;
-		volatile node_ll_linked<K,V> *node;
-		node = (volatile node_ll_linked<K,V> *)
+		volatile ll_simple<K,V> *node;
+		node = (volatile ll_simple<K,V> *)
 			get_unmarked_ref((long)head->next);
-		while ((volatile node_ll_linked<K,V> *)
+		while ((volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)node->next) != NULL) {
 			if (!is_marked_ref((long)node->next))
 				size++;
-			node = (volatile node_ll_linked<K,V> *)
+			node = (volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)node->next);
 		}
 		return size;

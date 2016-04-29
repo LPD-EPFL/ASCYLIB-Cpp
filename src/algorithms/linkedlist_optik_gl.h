@@ -6,8 +6,8 @@ extern "C" {
 #include "utils.h"
 }
 #include "search.h"
-#include "linklist_node_linked.h"
 #include "key_max_min.h"
+#include "ll_simple.h"
 
 template <typename K, typename V,
 	 typename K_MAX_MIN = KeyMaxMin<K> >
@@ -16,10 +16,10 @@ class LinkedListOptikGL : public Search<K,V>
 public:
 	LinkedListOptikGL()
 	{
-		volatile node_ll_linked<K,V> *min, *max;
-		max =  initialize_node_ll_linked<K,V>(K_MAX_MIN::max_value(),
-			(V) 0, (volatile node_ll_linked<K,V> *)NULL);
-		min = initialize_node_ll_linked<K,V>(K_MAX_MIN::min_value(),
+		volatile ll_simple<K,V> *min, *max;
+		max =  initialize_ll_simple<K,V>(K_MAX_MIN::max_value(),
+			(V) 0, (volatile ll_simple<K,V> *)NULL);
+		min = initialize_ll_simple<K,V>(K_MAX_MIN::min_value(),
 			(V) 0, max);
 		head = min;
 
@@ -30,11 +30,11 @@ public:
 
 	~LinkedListOptikGL()
 	{
-		volatile node_ll_linked<K,V> *curr, *next;
+		volatile ll_simple<K,V> *curr, *next;
 		curr = head;
 		while (NULL != curr) {
 			next = curr->next;
-			node_ll_linked_delete<K,V>( curr );
+			ll_simple_delete<K,V>( curr );
 			curr = next;
 		}
 	}
@@ -42,7 +42,7 @@ public:
 	V search(K key)
 	{
 		PARSE_TRY();
-		volatile node_ll_linked<K,V> *curr = head;
+		volatile ll_simple<K,V> *curr = head;
 
 		while(likely(curr->key < key)) {
 			curr = curr->next;
@@ -56,7 +56,7 @@ public:
 
 	int insert(K key, V val)
 	{
-		volatile node_ll_linked<K,V> *curr, *pred, *newnode;
+		volatile ll_simple<K,V> *curr, *pred, *newnode;
 		NUM_RETRIES();
 
 restart:
@@ -73,10 +73,10 @@ restart:
 		if (curr->key == key) {
 			return false;
 		}
-		newnode = allocate_node_ll_linked<K,V>(key,val,curr);
+		newnode = allocate_ll_simple<K,V>(key,val,curr);
 		if (!optik_trylock_version(&lock, version)) {
 			DO_PAUSE();
-			node_ll_linked_release(newnode);
+			ll_simple_release(newnode);
 			goto restart;
 		}
 #ifdef __tile__
@@ -90,7 +90,7 @@ restart:
 
 	V remove(K key)
 	{
-		volatile node_ll_linked<K,V> *pred, *curr;
+		volatile ll_simple<K,V> *pred, *curr;
 		V result = (V) 0;
 		NUM_RETRIES();
 
@@ -116,7 +116,7 @@ restart:
 		pred->next = curr->next;
 		optik_unlock(&lock);
 		result = curr->val;
-		node_ll_linked_release<K,V>(curr);
+		ll_simple_release<K,V>(curr);
 
 		return result;
 	}
@@ -124,7 +124,7 @@ restart:
 	int length()
 	{
 		int count = 0;
-		volatile node_ll_linked<K,V> *tmp;
+		volatile ll_simple<K,V> *tmp;
 
 		tmp = head->next;
 		while(tmp->next != NULL) {
@@ -135,7 +135,7 @@ restart:
 		return count;
 	}
 private:
-	volatile node_ll_linked<K,V> *head;
+	volatile ll_simple<K,V> *head;
 	optik_t lock;
 };
 

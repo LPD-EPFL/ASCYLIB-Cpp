@@ -1,5 +1,5 @@
-#ifndef __LINKEDLIST_NODE_LINKED_H__
-#define __LINKEDLIST_NODE_LINKED_H__
+#ifndef _LL_SIMPLE_H_
+#define _LL_SIMPLE_H_
 
 #include<stdlib.h>
 #include<malloc.h>
@@ -7,20 +7,20 @@
 extern __thread ssmem_allocator_t* alloc;
 
 template <typename K, typename V>
-struct node_ll_linked {
+struct ll_simple {
 	K key;
 	V val;
-	volatile struct node_ll_linked *next;
+	volatile struct ll_simple *next;
 	uint8_t padding32[8];
 };
 
 template <typename K, typename V>
-volatile node_ll_linked<K,V> *initialize_node_ll_linked(K key, V val,
-		volatile node_ll_linked<K,V> *next)
+volatile ll_simple<K,V> *initialize_ll_simple(K key, V val,
+		volatile ll_simple<K,V> *next)
 {
-	volatile node_ll_linked<K,V> *node;
-	node = (volatile node_ll_linked<K,V> *)
-		malloc(sizeof(node_ll_linked<K,V>));
+	volatile ll_simple<K,V> *node;
+	node = (volatile ll_simple<K,V> *)
+		malloc(sizeof(ll_simple<K,V>));
 	if (node == NULL) {
 		perror("malloc @ linkedlist_node_linked");
 		exit(1);
@@ -37,15 +37,15 @@ volatile node_ll_linked<K,V> *initialize_node_ll_linked(K key, V val,
 }
 
 template <typename K, typename V>
-volatile node_ll_linked<K,V> *allocate_node_ll_linked(K key, V val,
-		volatile node_ll_linked<K,V> *next)
+volatile ll_simple<K,V> *allocate_ll_simple(K key, V val,
+		volatile ll_simple<K,V> *next)
 {
-	volatile node_ll_linked<K,V> *node;
+	volatile ll_simple<K,V> *node;
 #if GC == 1
-	node = (volatile node_ll_linked<K,V> *)
-		ssmem_alloc(alloc, sizeof(node_ll_linked<K,V>));
+	node = (volatile ll_simple<K,V> *)
+		ssmem_alloc(alloc, sizeof(ll_simple<K,V>));
 #else
-	node = (volatile node_ll_linked<K,V> *) malloc(sizeof(node_ll_linked<K,V>));
+	node = (volatile ll_simple<K,V> *) malloc(sizeof(ll_simple<K,V>));
 #endif
 	if (node == NULL) {
 		perror("malloc @ linkedlist_node_linked");
@@ -63,7 +63,7 @@ volatile node_ll_linked<K,V> *allocate_node_ll_linked(K key, V val,
 }
 
 template<typename K, typename V>
-void node_ll_linked_release(volatile node_ll_linked<K,V> *node)
+void ll_simple_release(volatile ll_simple<K,V> *node)
 {
 #if GC == 1
 	ssmem_free(alloc, (void*) node);
@@ -71,9 +71,9 @@ void node_ll_linked_release(volatile node_ll_linked<K,V> *node)
 }
 
 template<typename K, typename V>
-void node_ll_linked_delete(volatile node_ll_linked<K,V> *node)
+void ll_simple_delete(volatile ll_simple<K,V> *node)
 {
-	DESTROY_LOCK( &(node->lock) );
+	//DESTROY_LOCK( &(node->lock) );
 #if GC == 1
 	free( (void*)node );
 #endif

@@ -9,14 +9,14 @@ extern "C" {
 
 #include "search.h"
 #include "key_max_min.h"
-#include "linklist_node_linked.h"
+#include "ll_simple.h"
 
 template<typename K, typename V,
 	typename K_MAX_MIN = KeyMaxMin<K> >
 class LinkedListHarris: public Search<K,V>
 {
 private:
-	volatile node_ll_linked<K,V> *head;
+	volatile ll_simple<K,V> *head;
 	/*
 	 * The five following functions handle the low-order mark bit that indicates
 	 * whether a node is logically deleted (1) or not (0).
@@ -57,23 +57,23 @@ private:
 		return w | 0x1L;
 	}
 
-	volatile node_ll_linked<K,V> *harris_search(K key,
-			volatile node_ll_linked<K,V> **left_node)
+	volatile ll_simple<K,V> *harris_search(K key,
+			volatile ll_simple<K,V> **left_node)
 	{
-		volatile node_ll_linked<K,V> *left_node_next, *right_node;
+		volatile ll_simple<K,V> *left_node_next, *right_node;
 		left_node_next = head;
 
 		do {
 			PARSE_TRY();
-			volatile node_ll_linked<K,V> *t = head;
-			volatile node_ll_linked<K,V> *t_next = head->next;
+			volatile ll_simple<K,V> *t = head;
+			volatile ll_simple<K,V> *t_next = head->next;
 
 			do {
 				if (!is_marked_ref((long) t_next)) {
 					(*left_node) = t;
 					left_node_next = t_next;
 				}
-				t = (volatile node_ll_linked<K,V> *)
+				t = (volatile ll_simple<K,V> *)
 					get_unmarked_ref((long) t_next);
 				if (!t->next) {
 					break;
@@ -94,11 +94,11 @@ private:
 			if (ATOMIC_CAS_MB(&(*left_node)->next, left_node_next,
 						right_node)) {
 #if GC==1
-				volatile node_ll_linked<K,V> *cur = left_node_next;
+				volatile ll_simple<K,V> *cur = left_node_next;
 				do {
-					volatile node_ll_linked<K,V>
+					volatile ll_simple<K,V>
 						*node_to_free = cur;
-					cur = (volatile node_ll_linked<K,V> *)
+					cur = (volatile ll_simple<K,V> *)
 						get_unmarked_ref((long) cur->next);
 					ssmem_free(alloc, (void*)node_to_free);
 				} while (cur != right_node);
@@ -113,7 +113,7 @@ private:
 
 	V harris_find(K key)
 	{
-		volatile node_ll_linked<K,V> *right_node, *left_node;
+		volatile ll_simple<K,V> *right_node, *left_node;
 		left_node = head;
 
 		right_node = harris_search(key, &left_node);
@@ -127,7 +127,7 @@ private:
 
 	int harris_insert(K key, V val)
 	{
-		volatile node_ll_linked<K,V> *newnode = NULL,
+		volatile ll_simple<K,V> *newnode = NULL,
 			 *right_node, *left_node;
 		left_node = head;
 
@@ -143,7 +143,7 @@ private:
 				return 0;
 			}
 			if (likely(newnode == NULL)) {
-				newnode = allocate_node_ll_linked<K,V>(key, val,
+				newnode = allocate_ll_simple<K,V>(key, val,
 						right_node);
 			} else {
 				newnode->next = right_node;
@@ -159,7 +159,7 @@ private:
 
 	V harris_remove(K key)
 	{
-		volatile node_ll_linked<K,V> *right_node, *right_node_next,
+		volatile ll_simple<K,V> *right_node, *right_node_next,
 			 *left_node;
 		left_node = head;
 		V ret = 0;
@@ -198,24 +198,24 @@ private:
 public:
 	LinkedListHarris()
 	{
-		volatile node_ll_linked<K,V> *min, *max;
+		volatile ll_simple<K,V> *min, *max;
 
-		head = (volatile node_ll_linked<K,V> *)
-		malloc(sizeof(node_ll_linked<K,V>));
+		head = (volatile ll_simple<K,V> *)
+		malloc(sizeof(ll_simple<K,V>));
 		if (NULL == head) {
 			perror("malloc at LinkedListHarris constructor");
 			exit(1);
 		}
-		max = initialize_node_ll_linked<K,V>(
+		max = initialize_ll_simple<K,V>(
 			K_MAX_MIN::max_value(), 0, NULL);
-		min = initialize_node_ll_linked<K,V>(
+		min = initialize_ll_simple<K,V>(
 			K_MAX_MIN::min_value(), 0, max);
 		head = min;
 	}
 
 	~LinkedListHarris()
 	{
-		volatile node_ll_linked<K,V> *node, *next;
+		volatile ll_simple<K,V> *node, *next;
 		node = head;
 
 		while (node!=NULL) {
@@ -249,14 +249,14 @@ public:
 	int length()
 	{
 		int size = 0;
-		volatile node_ll_linked<K,V> *node;
-		node = (volatile node_ll_linked<K,V> *)
+		volatile ll_simple<K,V> *node;
+		node = (volatile ll_simple<K,V> *)
 			get_unmarked_ref((long)head->next);
-		while ((volatile node_ll_linked<K,V> *)
+		while ((volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)node->next) != NULL) {
 			if (!is_marked_ref((long)node->next))
 				size++;
-			node = (volatile node_ll_linked<K,V> *)
+			node = (volatile ll_simple<K,V> *)
 				get_unmarked_ref((long)node->next);
 		}
 		return size;
