@@ -68,7 +68,7 @@ class LinkedListLazy : public Search<K,V>
 			curr = curr->next;
 		}
 
-		sval_t res = 0;
+		V res = 0;
 		if ((curr->key == key) && !curr->marked) {
 			res = curr->val;
 		}
