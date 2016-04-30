@@ -56,7 +56,9 @@ int seed = 0;
 __thread unsigned long *seeds;
 uint32_t rand_max;
 #define rand_min 1
-#define sval_t int
+//#define sval_t int
+//#define skey_t int
+#define sval_t int*
 #define skey_t int
 
 static volatile int stop;
@@ -172,12 +174,14 @@ void* test(void* thread)
 	/*   key = range; */
 	/* #endif */
 
+	int one = 1;
 	for(i = 0; i < num_elems_thread; i++)
 	{
 		key = (my_random(&(seeds[0]), &(seeds[1]), &(seeds[2]))
 			% (rand_max + 1)) + rand_min;
 		//if(set->insert(key, NULL) == false) {
-		if(set->insert(key, 1) == false) {
+		//if(set->insert(key, 1) == false) {
+		if(set->insert(key, &one) == false) {
 			i--;
 		} else if (test_verbose && ID == 0 && (i & 1023) == 0) {
 			size_t ni = i * num_threads;
@@ -199,7 +203,8 @@ void* test(void* thread)
 	RR_START_SIMPLE();
 
 	//sval_t val = 0;
-	sval_t val = 15;
+	int number = 15;
+	sval_t val = &number;
 	while (stop == 0) {
 		c = (uint32_t)(my_random(&(seeds[0]),&(seeds[1]),&(seeds[2])));
 		key = (c & rand_max) + rand_min;
@@ -214,10 +219,10 @@ void* test(void* thread)
 				my_putting_count_succ++;
 			}
 			END_TS_ELSE(4, my_putting_count - my_putting_count_succ,
-			my_putting_fail);
+				my_putting_fail);
 			my_putting_count++;
 		} else if(unlikely(c <= scale_rem)) {
-			int removed;
+			sval_t removed;
 			START_TS(2);
 			removed = set->remove(key); //DS_REMOVE(set, key, algo_type);
 			if(removed != 0) {
@@ -226,10 +231,10 @@ void* test(void* thread)
 				my_removing_count_succ++;
 			}
 			END_TS_ELSE(5, my_removing_count - my_removing_count_succ,
-			my_removing_fail);
+				my_removing_fail);
 			my_removing_count++;
 		} else {
-			int res;
+			sval_t res;
 			START_TS(0);
 			res = (sval_t) set->search(key);
 			//res = (sval_t) DS_CONTAINS(set, key, algo_type);
