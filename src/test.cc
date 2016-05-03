@@ -17,6 +17,7 @@ extern "C" {
 #include"linkedlist_optik_gl.h"
 #include"linkedlist_pugh.h"
 #include"linkedlist_seq.h"
+#include"hashtable_harris.h"
 
 #define ASSERT_SIZE 1
 
@@ -31,16 +32,20 @@ enum algorithms {
 	LL_HARRIS_OPT,
 	LL_OPTIK,
 	LL_PUGH,
-	LL_SEQ
+	LL_SEQ,
+	HT_HARRIS
 };
 algorithms algorithm;
 
 __thread ssmem_allocator_t* alloc;
 
+RETRY_STATS_VARS_GLOBAL;
+
 size_t array_ll_fixed_size = DEFAULT_RANGE;
+unsigned int maxhtlength;
 size_t initial = DEFAULT_INITIAL;
 size_t range = DEFAULT_RANGE;
-size_t load_factor;
+size_t load_factor = DEFAULT_LOAD;
 size_t update = DEFAULT_UPDATE;
 size_t num_threads = DEFAULT_NB_THREADS;
 size_t duration = DEFAULT_DURATION;
@@ -315,6 +320,7 @@ int main(int argc, char**argv)
 		{"num-buckets",               required_argument, NULL, 'b'},
 		{"print-vals",                required_argument, NULL, 'v'},
 		{"vals-pf",                   required_argument, NULL, 'f'},
+		{"load-factor",               required_argument, NULL, 'l'},
 		{"algorithm",                 required_argument, NULL, 'a'},
 		{NULL, 0, NULL, 0}
 	};
@@ -356,6 +362,8 @@ int main(int argc, char**argv)
 			"        Range of integer values inserted in set\n"
 			"  -u, --update-rate <int>\n"
 			"        Percentage of update transactions\n"
+			"  -l, --load-factor <int>\n"
+			"        Elements per bucket (for hash tables)\n"
 			"  -p, --put-rate <int>\n"
 			"        Percentage of put update transactions (should be less than percentage of updates)\n"
 			"  -b, --num-buckets <int>\n"
@@ -369,6 +377,7 @@ int main(int argc, char**argv)
 			"        Possible options:\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_PUGH, LL_SEQ\n"
+			"        HT_HARRIS\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -425,6 +434,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"LL_SEQ",7)) {
 				algorithm = LL_SEQ;
 				printf("Using LL_SEQ\n");
+			} else if (!strncmp(optarg,"HT_HARRIS",10)) {
+				algorithm = HT_HARRIS;
+				printf("Using HT_HARRIS\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -444,7 +456,7 @@ int main(int argc, char**argv)
 	if (range < initial) {
 		range = 2 * initial;
 	}
-	printf("## Initial: %zu / Range: %zu\n", initial, range);
+	printf("## Initial: %zu / Range: %zu / Load factor (for hashtables): %zu\n", initial, range, load_factor);
 
 	double kb = initial * 16/*sizeof(DS_NODE)*/ / 1024.0;
 	double mb = kb / 1024.0;
@@ -477,6 +489,8 @@ int main(int argc, char**argv)
 
 	stop = 0;
 
+	maxhtlength = (unsigned int) initial / load_factor;
+
 	Search<skey_t, sval_t> *set;
 	if (algorithm == LL_COPY) {
 		set = new LinkedListCopy<skey_t,sval_t>();
@@ -492,6 +506,8 @@ int main(int argc, char**argv)
 		set = new LinkedListPugh<skey_t, sval_t>();
 	} else if (algorithm == LL_SEQ) {
 		set = new LinkedListSeq<skey_t, sval_t>();
+	} else if (algorithm == HT_HARRIS) {
+		set = new HashtableHarris<skey_t, sval_t>(maxhtlength);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}

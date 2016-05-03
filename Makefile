@@ -3,7 +3,10 @@
 #TEST_FILE := mytest
 TEST_FILE := test
 SEARCH_HEADER_FILE := search.h
-ALGORITHMS := linkedlist_copy
+ALGORITHMS := linkedlist_copy linkedlist_coupling linkedlist_harris
+ALGORITHMS += linkedlist_harris_opt linkedlist_lazy linkedlist_optik_gl
+ALGORITHMS += linkedlist_pugh linkedlist_seq
+ALGORITHMS += hashtable_harris
 GC := 1
 
 SRC_DIR := src
