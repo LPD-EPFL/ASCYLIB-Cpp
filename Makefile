@@ -7,12 +7,14 @@ ALGORITHMS := linkedlist_copy linkedlist_coupling linkedlist_harris
 ALGORITHMS += linkedlist_harris_opt linkedlist_lazy linkedlist_optik_gl
 ALGORITHMS += linkedlist_pugh linkedlist_seq
 ALGORITHMS += hashtable_harris
+AUX_FILES := key_hasher key_max_min ll_array ll_locked ll_marked ll_simple
 GC := 1
 
 SRC_DIR := src
 BIN_DIR := bin
 BUILD_DIR := build
 ALGORITHMS_SUBDIR := algorithms
+AUX_SUBDIR := aux
 
 CPPFLAGS += -Wall -fno-strict-aliasing
 CPPFLAGS += -Iinclude/ -Iexternal/include/
@@ -28,6 +30,7 @@ $(shell [ -d "$(BIN_DIR)" ] || mkdir -p $(BIN_DIR))
 #SRC := $(patsubst %, $(SRC_DIR)/$(ALGORITHMS_SUBDIR)/%.cpp, $(ALGORITHMS))
 #OBJ := $(patsubst %, $(BUILD_DIR)/%.o, $(ALGORITHMS))
 HEADERS := $(patsubst %, $(SRC_DIR)/$(ALGORITHMS_SUBDIR)/%.h, $(ALGORITHMS))
+HEADERS += $(patsubst %, $(SRC_DIR)/$(AUX_SUBDIR)/%.h, $(AUX_FILES))
 
 include comp_flags.mk
 
