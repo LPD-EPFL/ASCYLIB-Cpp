@@ -12,13 +12,13 @@ fixed_file_dat=1
 
 mkdir -p data
 
-algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS LL_HARRIS_OPT );
+algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS LL_HARRIS_OPT LL_OPTIK LL_PUGH );
 
 # params_initial=( 128 512 2048 4096 8192 );
 # params_update=( 100 50  20   10   1 );
 params_initial=(  64 1024 8192 64 1024 8192 );
-params_update=(   40 40   40   40 40   40 );
-params_workload=( 0   0   0    2  2    2);
+params_update=(   40 40   40   80 80   80 );
+params_workload=( 0   0   0    0  0    0);
 
 num_params=${#params_initial[*]};
 
@@ -43,7 +43,7 @@ num_algorithms=${#algos[@]};
 dur_tot=$(( $num_algorithms*$num_params*$num_tests_cores*$repetitions*$duration_secs ));
 
 printf "#> $num_algorithms algos, $num_params params, $num_tests_cores cores configurations, $repetitions reps of %.2f sec = %.2f sec\n" $duration_secs $dur_tot;
-printf "#> = %.2f hours\n" $(( $dur_tot/3600 ));
+printf "#> = %.2f hours\n" $( echo "$dur_tot/3600" | bc -l );
 
 printf "   Continue? [Y/n] ";
 read cont;
