@@ -26,7 +26,7 @@ max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
 if [[ $max_cores -eq 1 ]] ; then
 	max_cores=4
 fi
-increment=$(($max_cores/4))
+increment=$(($max_cores/8))
 if [[ $increment -eq 0 ]] ; then
 	increment=1
 fi

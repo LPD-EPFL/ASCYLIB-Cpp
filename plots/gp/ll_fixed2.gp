@@ -14,13 +14,14 @@ set lmargin 3
 set tmargin 3
 set bmargin 2.5
 
-n_algo = 5
+n_algo = 7
 
 title_offset   = -0.5
 top_row_y      = 0.44
 bottom_row_y   = 0.0
 graphs_x_offs  = 0.1
-plot_size_x    = 2.615
+#plot_size_x    = 2.615
+plot_size_x    = 3.115
 plot_size_y    = 0.66
 
 DIV              =    1e6
@@ -33,26 +34,37 @@ LINE1 = '"LL_COPY"'
 LINE2 = '"LL_COUPLING"'
 LINE3 = '"LL_HARRIS"'
 LINE4 = '"LL_HARRIS_OPT"'
+LINE5 = '"LL_OPTIK"'
+LINE6 = '"LL_PUGH"'
 
 PLOT0 = '"Large\n{/*0.8(8192 elements, 20% updates)}"'
 PLOT1 = '"Medium\n{/*0.8(1024 elements, 20% updates)}"'
 PLOT2 = '"Small\n{/*0.8(64 elements, 20% updates)}"'
-PLOT3 = '"Large skewed\n{/*0.8(8192 elements, 20% updates)}"'
-PLOT4 = '"Small skewed\n{/*0.8(64 elements, 20% updates)}"'
+#PLOT3 = '"Large skewed\n{/*0.8(8192 elements, 20% updates)}"'
+#PLOT4 = '"Small skewed\n{/*0.8(64 elements, 20% updates)}"'
+PLOT3 = '"Large\n{/*0.8(8192 elements, 40% updates)}"'
+PLOT4 = '"Medium\n{/*0.8(1024 elements, 40% updates)}"'
+PLOT5 = '"Small\n{/*0.8(64 elements, 40% updates)}"'
 
 unset xlabel
 unset key
 
 set size plot_size_x, plot_size_y
-set multiplot layout 5, 2
+set multiplot layout 6, 2
 
 set size 0.5, 0.6
 
+#FILE0 = '"data/data.ll.i8192.u40.w0.dat"'
+#FILE1 = '"data/data.ll.i1024.u40.w0.dat"'
+#FILE2 = '"data/data.ll.i64.u40.w0.dat"'
+#FILE3 = '"data/data.ll.i8192.u40.w2.dat"'
+#FILE4 = '"data/data.ll.i64.u40.w2.dat"'
 FILE0 = '"data/data.ll.i8192.u40.w0.dat"'
 FILE1 = '"data/data.ll.i1024.u40.w0.dat"'
 FILE2 = '"data/data.ll.i64.u40.w0.dat"'
-FILE3 = '"data/data.ll.i8192.u40.w2.dat"'
-FILE4 = '"data/data.ll.i64.u40.w2.dat"'
+FILE3 = '"data/data.ll.i8192.u80.w0.dat"'
+FILE4 = '"data/data.ll.i1024.u80.w0.dat"'
+FILE5 = '"data/data.ll.i64.u80.w0.dat"'
 
 set xlabel "# Threads" offset 0, 0.75 font ",28"
 
@@ -103,6 +115,15 @@ unset ylabel
 #set ytics 0.2 3
 plot for [i=1:n_algo] @FILE4 using ($1):(column(i+1) / DIV) ls i with linespoints
 
+set origin 2.5 + graphs_x_offs, bottom_row_y
+@PSIZE
+set title @PLOT5
+@YTICS
+set ylabel ""
+unset ylabel
+#set ytics 0.2 3
+plot for [i=1:n_algo] @FILE5 using ($1):(column(i+1) / DIV) ls i with linespoints
+
 unset origin
 unset border
 unset tics
@@ -117,8 +138,8 @@ set size plot_size_x, plot_size_y #however big you need it
 set origin 0.0, 1.1
 
 #example key settings
-# set key box 
-#set key horizontal reverse samplen 1 width -4 maxrows 1 maxcols 12 
+# set key box
+#set key horizontal reverse samplen 1 width -4 maxrows 1 maxcols 12
 #set key at screen 0.5,screen 0.25 center top
 set key font ",28"
 set key spacing 1.5
@@ -134,7 +155,9 @@ plot \
      NaN title @LINE1 ls 2 with linespoints, \
      NaN title @LINE2 ls 3 with linespoints, \
      NaN title @LINE3 ls 4 with linespoints, \
-     NaN title @LINE4 ls 5 with linespoints
+     NaN title @LINE4 ls 5 with linespoints, \
+     NaN title @LINE5 ls 6 with linespoints, \
+     NaN title @LINE6 ls 7 with linespoints
 
 
 #</null>
