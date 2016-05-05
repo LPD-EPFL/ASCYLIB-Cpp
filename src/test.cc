@@ -18,6 +18,7 @@ extern "C" {
 #include"linkedlist_pugh.h"
 #include"linkedlist_seq.h"
 #include"hashtable_harris.h"
+#include"hashtable_copy.h"
 
 #define ASSERT_SIZE 1
 
@@ -33,7 +34,8 @@ enum algorithms {
 	LL_OPTIK,
 	LL_PUGH,
 	LL_SEQ,
-	HT_HARRIS
+	HT_HARRIS,
+	HT_COPY
 };
 algorithms algorithm;
 
@@ -377,7 +379,7 @@ int main(int argc, char**argv)
 			"        Possible options:\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_PUGH, LL_SEQ\n"
-			"        HT_HARRIS\n"
+			"        HT_HARRIS, HT_COPY\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -437,6 +439,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_HARRIS",10)) {
 				algorithm = HT_HARRIS;
 				printf("Using HT_HARRIS\n");
+			} else if (!strncmp(optarg,"HT_COPY",8)) {
+				algorithm = HT_COPY;
+				printf("Using HT_COPY\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -508,6 +513,8 @@ int main(int argc, char**argv)
 		set = new LinkedListSeq<skey_t, sval_t>();
 	} else if (algorithm == HT_HARRIS) {
 		set = new HashtableHarris<skey_t, sval_t>(maxhtlength);
+	} else if (algorithm == HT_COPY) {
+		set = new HashtableCopy<key_t, sval_t>(maxhtlength);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
