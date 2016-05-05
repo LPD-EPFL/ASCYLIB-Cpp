@@ -6,8 +6,8 @@ SEARCH_HEADER_FILE := search.h
 ALGORITHMS := linkedlist_copy linkedlist_coupling linkedlist_harris
 ALGORITHMS += linkedlist_harris_opt linkedlist_lazy linkedlist_optik_gl
 ALGORITHMS += linkedlist_pugh linkedlist_seq
-ALGORITHMS += hashtable_harris hashtable_copy
-AUX_FILES := key_hasher key_max_min ll_array ll_locked ll_marked ll_simple
+ALGORITHMS += hashtable_harris hashtable_copy hashtable_java
+AUX_FILES := key_hasher key_max_min ll_array ll_locked ll_marked ll_simple conc_hashmap_segment
 GC := 1
 
 SRC_DIR := src

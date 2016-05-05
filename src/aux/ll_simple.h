@@ -22,7 +22,7 @@ volatile ll_simple<K,V> *initialize_ll_simple(K key, V val,
 	node = (volatile ll_simple<K,V> *)
 		malloc(sizeof(ll_simple<K,V>));
 	if (node == NULL) {
-		perror("malloc @ linkedlist_node_linked");
+		perror("malloc @ initialize_ll_simple");
 		exit(1);
 	}
 	node->key = key;
@@ -48,7 +48,7 @@ volatile ll_simple<K,V> *allocate_ll_simple(K key, V val,
 	node = (volatile ll_simple<K,V> *) malloc(sizeof(ll_simple<K,V>));
 #endif
 	if (node == NULL) {
-		perror("malloc @ linkedlist_node_linked");
+		perror("malloc @ allocate_ll_simple");
 		exit(1);
 	}
 	node->key = key;

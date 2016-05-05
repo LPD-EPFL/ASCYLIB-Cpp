@@ -19,6 +19,7 @@ extern "C" {
 #include"linkedlist_seq.h"
 #include"hashtable_harris.h"
 #include"hashtable_copy.h"
+#include"hashtable_java.h"
 
 #define ASSERT_SIZE 1
 
@@ -35,7 +36,8 @@ enum algorithms {
 	LL_PUGH,
 	LL_SEQ,
 	HT_HARRIS,
-	HT_COPY
+	HT_COPY,
+	HT_JAVA
 };
 algorithms algorithm;
 
@@ -45,7 +47,9 @@ RETRY_STATS_VARS_GLOBAL;
 
 size_t array_ll_fixed_size = DEFAULT_RANGE;
 unsigned int maxhtlength;
+
 size_t initial = DEFAULT_INITIAL;
+size_t concurrency = CHM_NUM_SEGMENTS;
 size_t range = DEFAULT_RANGE;
 size_t load_factor = DEFAULT_LOAD;
 size_t update = DEFAULT_UPDATE;
@@ -323,6 +327,7 @@ int main(int argc, char**argv)
 		{"print-vals",                required_argument, NULL, 'v'},
 		{"vals-pf",                   required_argument, NULL, 'f'},
 		{"load-factor",               required_argument, NULL, 'l'},
+		{"concurrency",               required_argument, NULL, 'c'},
 		{"algorithm",                 required_argument, NULL, 'a'},
 		{NULL, 0, NULL, 0}
 	};
@@ -330,7 +335,7 @@ int main(int argc, char**argv)
 	int i,c;
 	while(1) {
 		i=0;
-		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:m:el:p:b:v:f:x:a:",
+		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:m:el:p:b:v:f:c:x:a:",
 			long_options, &i);
 		if (c==-1) {
 			break;
@@ -364,6 +369,8 @@ int main(int argc, char**argv)
 			"        Range of integer values inserted in set\n"
 			"  -u, --update-rate <int>\n"
 			"        Percentage of update transactions\n"
+			"  -c, --concurrency <int>\n"
+			"        Concurrency level (for the Java hash table)\n"
 			"  -l, --load-factor <int>\n"
 			"        Elements per bucket (for hash tables)\n"
 			"  -p, --put-rate <int>\n"
@@ -391,6 +398,9 @@ int main(int argc, char**argv)
 			break;
 		case 'i':
 			initial = atoi(optarg);
+			break;
+		case 'c':
+			concurrency = pow2roundup(atoi(optarg));
 			break;
 		case 'n':
 			num_threads = atoi(optarg);
@@ -442,6 +452,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_COPY",8)) {
 				algorithm = HT_COPY;
 				printf("Using HT_COPY\n");
+			} else if (!strncmp(optarg,"HT_JAVA",8)) {
+				algorithm = HT_JAVA;
+				printf("Using HT_JAVA\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -461,11 +474,12 @@ int main(int argc, char**argv)
 	if (range < initial) {
 		range = 2 * initial;
 	}
-	printf("## Initial: %zu / Range: %zu / Load factor (for hashtables): %zu\n", initial, range, load_factor);
+	printf("## Initial: %zu / Range: %zu / Load factor (for HTs): %zu / Concurrency (for HTs): %zu\n", initial, range, load_factor, concurrency);
 
-	double kb = initial * 16/*sizeof(DS_NODE)*/ / 1024.0;
-	double mb = kb / 1024.0;
-	printf("Sizeof initial: %.2f kB = %.2f MB\n", kb, mb);
+	// TODO this calculation is NOT correct
+	//double kb = initial * 16/*sizeof(DS_NODE)*/ / 1024.0;
+	//double mb = kb / 1024.0;
+	//printf("Sizeof initial: %.2f kB = %.2f MB\n", kb, mb);
 
 	if (!is_power_of_two(range)) {
 		size_t range_pow2 = pow2roundup(range);
@@ -495,6 +509,7 @@ int main(int argc, char**argv)
 	stop = 0;
 
 	maxhtlength = (unsigned int) initial / load_factor;
+	size_t capacity = initial / load_factor;
 
 	Search<skey_t, sval_t> *set;
 	if (algorithm == LL_COPY) {
@@ -515,6 +530,8 @@ int main(int argc, char**argv)
 		set = new HashtableHarris<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == HT_COPY) {
 		set = new HashtableCopy<key_t, sval_t>(maxhtlength);
+	} else if (algorithm == HT_JAVA) {
+		set = new HashtableJavaCHM<key_t, sval_t>(capacity, concurrency);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
