@@ -1,5 +1,5 @@
-#ifndef __KEY_MAX_MIN_H
-#define __KEY_MAX_MIN_H
+#ifndef _KEY_MAX_MIN_H_
+#define _KEY_MAX_MIN_H_
 
 #include <limits>
 template <typename T>

@@ -21,6 +21,7 @@ extern "C" {
 #include"hashtable_harris.h"
 #include"hashtable_copy.h"
 #include"hashtable_java.h"
+#include"hashtable_optik_gl.h"
 
 #define ASSERT_SIZE 1
 
@@ -39,7 +40,8 @@ enum algorithms {
 	LL_SEQ,
 	HT_HARRIS,
 	HT_COPY,
-	HT_JAVA
+	HT_JAVA,
+	HT_OPTIK_GL
 };
 algorithms algorithm;
 
@@ -388,7 +390,7 @@ int main(int argc, char**argv)
 			"        Possible options:\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
-			"        HT_HARRIS, HT_COPY\n"
+			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK_GL\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -460,6 +462,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_JAVA",8)) {
 				algorithm = HT_JAVA;
 				printf("Using HT_JAVA\n");
+			} else if (!strncmp(optarg,"HT_OPTIK_GL",12)) {
+				algorithm = HT_OPTIK_GL;
+				printf("Using HT_OPTIK_GL\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -536,9 +541,11 @@ int main(int argc, char**argv)
 	} else if (algorithm == HT_HARRIS) {
 		set = new HashtableHarris<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == HT_COPY) {
-		set = new HashtableCopy<key_t, sval_t>(maxhtlength);
+		set = new HashtableCopy<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == HT_JAVA) {
-		set = new HashtableJavaCHM<key_t, sval_t>(capacity, concurrency);
+		set = new HashtableJavaCHM<skey_t, sval_t>(capacity, concurrency);
+	} else if (algorithm == HT_OPTIK_GL) {
+		set = new HashtableOptikGL<skey_t, sval_t>(maxhtlength);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}

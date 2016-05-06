@@ -1,5 +1,5 @@
 #ifndef _LINKED_LIST_OPTIK_H_
-#define LINKED_LIST_OPTIK_H_
+#define _LINKED_LIST_OPTIK_H_
 
 extern "C" {
 #include "optik.h"
@@ -9,7 +9,7 @@ extern "C" {
 #include "key_max_min.h"
 #include "ll_optik.h"
 
-template <typename K, typename V,
+template < typename K, typename V,
 	 typename K_MAX_MIN = KeyMaxMin<K> >
 class LinkedListOptik : public Search<K,V>
 {
