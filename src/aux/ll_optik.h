@@ -1,5 +1,5 @@
-#ifndef _LL_LOCKED_H_
-#define _LL_LOCKED_H_
+#ifndef _LL_OPTIK_H_
+#define _LL_OPTIK_H_
 
 #include<stdio.h>
 #include<stdlib.h>
@@ -10,27 +10,25 @@ extern "C" {
 extern __thread ssmem_allocator_t* alloc;
 
 template<typename K, typename V>
-struct ll_locked
+struct ll_optik
 {
 	K key;                   /* 8 */
 	V val;                   /* 16 */
-	volatile struct ll_locked<K,V> *next; /* 24 */
-#if !defined(LL_GLOBAL_LOCK)
-	volatile ptlock_t lock;       /* 32 */
-#endif
+	volatile struct ll_optik<K,V> *next; /* 24 */
+	volatile optik_t lock;       /* 32 */
 };
 
 template<typename K, typename V>
-volatile ll_locked<K,V>* allocate_ll_locked(K key, V value,
-		volatile ll_locked<K,V> *next)
+volatile ll_optik<K,V>* allocate_ll_optik(K key, V value,
+		volatile ll_optik<K,V> *next)
 {
-	volatile ll_locked<K,V> *new_node;
+	volatile ll_optik<K,V> *new_node;
 #if GC==1
-	new_node = (volatile ll_locked<K,V> *)
-		ssmem_alloc(alloc, sizeof(ll_locked<K,V>));
+	new_node = (volatile ll_optik<K,V> *)
+		ssmem_alloc(alloc, sizeof(ll_optik<K,V>));
 #else
-	new_node = (volatile ll_locked<K,V> *)
-		malloc(sizeof(ll_locked<K,V>));
+	new_node = (volatile ll_optik<K,V> *)
+		malloc(sizeof(ll_optik<K,V>));
 #endif
 	if (new_node==NULL) {
 		perror("malloc @ allocate_ll_marked");
@@ -40,7 +38,7 @@ volatile ll_locked<K,V>* allocate_ll_locked(K key, V value,
 	new_node->val = value;
 	new_node->next = next;
 
-	INIT_LOCK(ND_GET_LOCK(new_node));
+	optik_init(&new_node->lock);
 
 #if defined(__tile__)
 	MEM_BARRIER;
@@ -49,20 +47,20 @@ volatile ll_locked<K,V>* allocate_ll_locked(K key, V value,
 }
 
 template<typename K, typename V>
-volatile ll_locked<K,V>* initialize_ll_locked(
-		K key, V value, volatile ll_locked<K,V> *next)
+volatile ll_optik<K,V>* initialize_ll_optik(
+		K key, V value, volatile ll_optik<K,V> *next)
 {
-	volatile ll_locked<K,V> *new_node;
-	new_node = (volatile ll_locked<K,V> *) malloc(sizeof(ll_locked<K,V>));
+	volatile ll_optik<K,V> *new_node;
+	new_node = (volatile ll_optik<K,V> *) malloc(sizeof(ll_optik<K,V>));
 	if (new_node==NULL) {
-		perror("malloc @ initialize_ll_locked");
+		perror("malloc @ initialize_ll_optik");
 		exit(1);
 	}
 	new_node->key = key;
 	new_node->val = value;
 	new_node->next = next;
 
-	INIT_LOCK(ND_GET_LOCK(new_node));
+	optik_init(&new_node->lock);
 
 #if defined(__tile__)
 	MEM_BARRIER;
@@ -71,7 +69,7 @@ volatile ll_locked<K,V>* initialize_ll_locked(
 }
 
 template<typename K, typename V>
-void ll_locked_release(volatile ll_locked<K,V> *node)
+void ll_optik_release(volatile ll_optik<K,V> *node)
 {
 #if GC == 1
 	ssmem_free(alloc, (void*) node);
@@ -79,7 +77,7 @@ void ll_locked_release(volatile ll_locked<K,V> *node)
 }
 
 template<typename K, typename V>
-void ll_locked_delete(volatile ll_locked<K,V> *node)
+void ll_optik_delete(volatile ll_optik<K,V> *node)
 {
 	DESTROY_LOCK( &(node->lock) );
 #if GC == 1

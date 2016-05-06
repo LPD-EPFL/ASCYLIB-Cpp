@@ -14,6 +14,7 @@ extern "C" {
 #include"linkedlist_coupling.h"
 #include"linkedlist_harris.h"
 #include"linkedlist_harris_opt.h"
+#include"linkedlist_optik.h"
 #include"linkedlist_optik_gl.h"
 #include"linkedlist_pugh.h"
 #include"linkedlist_seq.h"
@@ -33,6 +34,7 @@ enum algorithms {
 	LL_HARRIS,
 	LL_HARRIS_OPT,
 	LL_OPTIK,
+	LL_OPTIK_GL,
 	LL_PUGH,
 	LL_SEQ,
 	HT_HARRIS,
@@ -385,7 +387,7 @@ int main(int argc, char**argv)
 			"        What algorithm to use (LL_LAZY by default).\n"
 			"        Possible options:\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
-			"        LL_OPTIK, LL_PUGH, LL_SEQ\n"
+			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
 			"        HT_HARRIS, HT_COPY\n"
 			"\n"
 			, argv[0]);
@@ -440,6 +442,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"LL_OPTIK",9)) {
 				algorithm = LL_OPTIK;
 				printf("Using LL_OPTIK\n");
+			} else if (!strncmp(optarg,"LL_OPTIK_GL",12)) {
+				algorithm = LL_OPTIK_GL;
+				printf("Using LL_OPTIK_GL\n");
 			} else if (!strncmp(optarg,"LL_PUGH",8)) {
 				algorithm = LL_PUGH;
 				printf("Using LL_PUGH\n");
@@ -521,6 +526,8 @@ int main(int argc, char**argv)
 	} else if (algorithm == LL_HARRIS_OPT) {
 		set = new LinkedListHarrisOpt<skey_t, sval_t>();
 	} else if (algorithm == LL_OPTIK) {
+		set = new LinkedListOptik<skey_t, sval_t>();
+	} else if (algorithm == LL_OPTIK_GL) {
 		set = new LinkedListOptikGL<skey_t, sval_t>();
 	} else if (algorithm == LL_PUGH) {
 		set = new LinkedListPugh<skey_t, sval_t>();
