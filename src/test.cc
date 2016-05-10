@@ -8,6 +8,7 @@ extern "C" {
 #include"rapl_read.h"
 #include"ssmem.h"
 }
+#include"array_map_optik.h"
 #include"linkedlist_lazy.h"
 //#include"linkedlist_lazy_cache.h"
 #include"linkedlist_copy.h"
@@ -29,6 +30,7 @@ extern "C" {
 // and argument processing
 // Line 366
 enum algorithms {
+	AM_OPTIK,
 	LL_LAZY,
 	LL_COPY,
 	LL_COUPLING,
@@ -391,6 +393,7 @@ int main(int argc, char**argv)
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
 			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK_GL\n"
+			"        AM_OPTIK\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -465,6 +468,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_OPTIK_GL",12)) {
 				algorithm = HT_OPTIK_GL;
 				printf("Using HT_OPTIK_GL\n");
+			} else if (!strncmp(optarg,"AM_OPTIK",9)) {
+				algorithm = AM_OPTIK;
+				printf("Using AM_OPTIK\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -546,6 +552,8 @@ int main(int argc, char**argv)
 		set = new HashtableJavaCHM<skey_t, sval_t>(capacity, concurrency);
 	} else if (algorithm == HT_OPTIK_GL) {
 		set = new HashtableOptikGL<skey_t, sval_t>(maxhtlength);
+	} else if (algorithm == AM_OPTIK) {
+		set = new ArrayMapOptik<skey_t, sval_t>(initial);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}

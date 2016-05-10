@@ -1,5 +1,5 @@
-#ifndef _LL_ARRAY_
-#define _LL_ARRAY_
+#ifndef _LL_ARRAY_H_
+#define _LL_ARRAY_H_
 
 #include<stdlib.h>
 #include<malloc.h>

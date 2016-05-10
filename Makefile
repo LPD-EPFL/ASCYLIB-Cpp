@@ -7,6 +7,7 @@ ALGORITHMS := linkedlist_copy linkedlist_coupling linkedlist_harris
 ALGORITHMS += linkedlist_harris_opt linkedlist_lazy linkedlist_optik
 ALGORITHMS += linkedlist_optik_gl linkedlist_pugh linkedlist_seq
 ALGORITHMS += hashtable_harris hashtable_copy hashtable_java hashtable_optik_gl
+ALGORITHMS += array_map_optik
 AUX_FILES := key_hasher key_max_min
 AUX_FILES += ll_array ll_locked ll_marked ll_simple ll_optik conc_hashmap_segment
 GC := 1
