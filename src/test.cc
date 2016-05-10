@@ -24,6 +24,7 @@ extern "C" {
 #include"hashtable_java.h"
 #include"hashtable_optik_gl.h"
 #include"hashtable_optik_arraymap.h"
+#include"hashtable_pugh.h"
 
 #define ASSERT_SIZE 1
 
@@ -45,7 +46,8 @@ enum algorithms {
 	HT_COPY,
 	HT_JAVA,
 	HT_OPTIK_GL,
-	HT_OPTIK_AM
+	HT_OPTIK_AM,
+	HT_PUGH
 };
 algorithms algorithm;
 
@@ -396,6 +398,7 @@ int main(int argc, char**argv)
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
 			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK_GL, HT_OPTIK_AM\n"
+			"        HT_PUGH\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -476,6 +479,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_OPTIK_AM",12)) {
 				algorithm = HT_OPTIK_AM;
 				printf("Using HT_OPTIK_AM\n");
+			} else if (!strncmp(optarg,"HT_PUGH",8)) {
+				algorithm = HT_PUGH;
+				printf("Using HT_PUGH\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -563,6 +569,8 @@ int main(int argc, char**argv)
 	} else if (algorithm == HT_OPTIK_AM) {
 		set = new HashtableOptikArrayMap<skey_t, sval_t>
 			(maxhtlength, maxbulength);
+	} else if (algorithm == HT_PUGH) {
+		set = new HashtablePugh<skey_t, sval_t>(maxhtlength);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
