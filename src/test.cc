@@ -23,6 +23,7 @@ extern "C" {
 #include"hashtable_copy.h"
 #include"hashtable_java.h"
 #include"hashtable_optik_gl.h"
+#include"hashtable_optik_arraymap.h"
 
 #define ASSERT_SIZE 1
 
@@ -43,7 +44,8 @@ enum algorithms {
 	HT_HARRIS,
 	HT_COPY,
 	HT_JAVA,
-	HT_OPTIK_GL
+	HT_OPTIK_GL,
+	HT_OPTIK_AM
 };
 algorithms algorithm;
 
@@ -52,7 +54,7 @@ __thread ssmem_allocator_t* alloc;
 RETRY_STATS_VARS_GLOBAL;
 
 size_t array_ll_fixed_size = DEFAULT_RANGE;
-unsigned int maxhtlength;
+unsigned int maxhtlength, maxbulength;
 
 size_t initial = DEFAULT_INITIAL;
 size_t concurrency = CHM_NUM_SEGMENTS;
@@ -390,10 +392,10 @@ int main(int argc, char**argv)
 			"  -a, --algorithm <name>\n"
 			"        What algorithm to use (LL_LAZY by default).\n"
 			"        Possible options:\n"
+			"        AM_OPTIK,\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
-			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK_GL\n"
-			"        AM_OPTIK\n"
+			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK_GL, HT_OPTIK_AM\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -471,6 +473,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"AM_OPTIK",9)) {
 				algorithm = AM_OPTIK;
 				printf("Using AM_OPTIK\n");
+			} else if (!strncmp(optarg,"HT_OPTIK_AM",12)) {
+				algorithm = HT_OPTIK_AM;
+				printf("Using HT_OPTIK_AM\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -525,6 +530,7 @@ int main(int argc, char**argv)
 	stop = 0;
 
 	maxhtlength = (unsigned int) initial / load_factor;
+	maxbulength = ((unsigned int) range / initial) * load_factor;
 	size_t capacity = initial / load_factor;
 
 	Search<skey_t, sval_t> *set;
@@ -554,6 +560,9 @@ int main(int argc, char**argv)
 		set = new HashtableOptikGL<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == AM_OPTIK) {
 		set = new ArrayMapOptik<skey_t, sval_t>(initial);
+	} else if (algorithm == HT_OPTIK_AM) {
+		set = new HashtableOptikArrayMap<skey_t, sval_t>
+			(maxhtlength, maxbulength);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
