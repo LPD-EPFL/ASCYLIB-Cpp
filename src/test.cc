@@ -22,6 +22,7 @@ extern "C" {
 #include"hashtable_harris.h"
 #include"hashtable_copy.h"
 #include"hashtable_java.h"
+#include"hashtable_optik.h"
 #include"hashtable_optik_gl.h"
 #include"hashtable_optik_arraymap.h"
 #include"hashtable_pugh.h"
@@ -45,6 +46,7 @@ enum algorithms {
 	HT_HARRIS,
 	HT_COPY,
 	HT_JAVA,
+	HT_OPTIK,
 	HT_OPTIK_GL,
 	HT_OPTIK_AM,
 	HT_PUGH
@@ -397,8 +399,8 @@ int main(int argc, char**argv)
 			"        AM_OPTIK,\n"
 			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
-			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK_GL, HT_OPTIK_AM\n"
-			"        HT_PUGH\n"
+			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK, HT_OPTIK_GL\n"
+			"        HT_OPTIK_AM, HT_PUGH\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -470,6 +472,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_JAVA",8)) {
 				algorithm = HT_JAVA;
 				printf("Using HT_JAVA\n");
+			} else if (!strncmp(optarg,"HT_OPTIK",9)) {
+				algorithm = HT_OPTIK;
+				printf("Using HT_OPTIK\n");
 			} else if (!strncmp(optarg,"HT_OPTIK_GL",12)) {
 				algorithm = HT_OPTIK_GL;
 				printf("Using HT_OPTIK_GL\n");
@@ -562,6 +567,8 @@ int main(int argc, char**argv)
 		set = new HashtableCopy<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == HT_JAVA) {
 		set = new HashtableJavaCHM<skey_t, sval_t>(capacity, concurrency);
+	} else if (algorithm == HT_OPTIK) {
+		set = new HashtableOptik<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == HT_OPTIK_GL) {
 		set = new HashtableOptikGL<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == AM_OPTIK) {

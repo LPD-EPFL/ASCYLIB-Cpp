@@ -1,5 +1,5 @@
 #ifndef _LINKED_LIST_OPTIK_GL_H_
-#define LINKED_LIST_OPTIK_GL_H_
+#define _LINKED_LIST_OPTIK_GL_H_
 
 extern "C" {
 #include "optik.h"
