@@ -52,5 +52,12 @@ conc_hashmap_segment<K,V>* allocate_conc_hashmap_segment(
 	return seg;
 }
 
+template<typename K, typename V>
+void delete_conc_hashmap_segment(conc_hashmap_segment<K,V>* seg)
+{
+	DESTROY_LOCK_A(&seg->lock);
+	free(seg);
+
+}
 
 #endif

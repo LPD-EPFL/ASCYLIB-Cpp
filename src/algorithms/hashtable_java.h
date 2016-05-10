@@ -57,6 +57,10 @@ public:
 
 	~HashtableJavaCHM()
 	{
+		for (int s=0; s< chm->num_segments; s++) {
+			delete_conc_hashmap_segment(chm->segments[s]);
+		}
+		free(chm);
 	}
 
 	int insert(K key, V val)
