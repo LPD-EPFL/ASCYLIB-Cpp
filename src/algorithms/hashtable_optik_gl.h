@@ -33,6 +33,7 @@ public:
 		for (int i=0; i<maxhtlength; i++) {
 			delete buckets[i];
 		}
+		delete buckets;
 	}
 
 	V search(K key)
