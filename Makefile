@@ -9,8 +9,10 @@ ALGORITHMS += linkedlist_optik_gl linkedlist_pugh linkedlist_seq
 ALGORITHMS += hashtable_harris hashtable_copy hashtable_java hashtable_optik
 ALGORITHMS += hashtable_optik_gl hashtable_optik_arraymap hashtable_pugh
 ALGORITHMS += array_map_optik
+ALGORITHMS += skiplist_fraser
 AUX_FILES := key_hasher key_max_min
 AUX_FILES += ll_array ll_locked ll_marked ll_simple ll_optik conc_hashmap_segment
+AUX_FILES += sl_simple
 GC := 1
 
 SRC_DIR := src

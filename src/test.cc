@@ -26,6 +26,7 @@ extern "C" {
 #include"hashtable_optik_gl.h"
 #include"hashtable_optik_arraymap.h"
 #include"hashtable_pugh.h"
+#include"skiplist_fraser.h"
 
 #define ASSERT_SIZE 1
 
@@ -49,7 +50,8 @@ enum algorithms {
 	HT_OPTIK,
 	HT_OPTIK_GL,
 	HT_OPTIK_AM,
-	HT_PUGH
+	HT_PUGH,
+	SL_FRASER
 };
 algorithms algorithm;
 
@@ -59,6 +61,7 @@ RETRY_STATS_VARS_GLOBAL;
 
 size_t array_ll_fixed_size = DEFAULT_RANGE;
 unsigned int maxhtlength, maxbulength;
+unsigned int levelmax;
 
 size_t initial = DEFAULT_INITIAL;
 size_t concurrency = CHM_NUM_SEGMENTS;
@@ -313,7 +316,16 @@ void* test(void* thread)
 	pthread_exit(NULL);
 }
 
-
+int floor_log_2(unsigned int n)
+{
+	int pos = 0;
+	if (n >= 1<<16) { n >>= 16; pos += 16; }
+	if (n >= 1<< 8) { n >>=  8; pos +=  8; }
+	if (n >= 1<< 4) { n >>=  4; pos +=  4; }
+	if (n >= 1<< 2) { n >>=  2; pos +=  2; }
+	if (n >= 1<< 1) {           pos +=  1; }
+	return ((n == 0) ? (-1) : pos);
+}
 
 int main(int argc, char**argv)
 {
@@ -401,6 +413,7 @@ int main(int argc, char**argv)
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
 			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK, HT_OPTIK_GL\n"
 			"        HT_OPTIK_AM, HT_PUGH\n"
+			"        SL_FRASER\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -487,6 +500,9 @@ int main(int argc, char**argv)
 			} else if (!strncmp(optarg,"HT_PUGH",8)) {
 				algorithm = HT_PUGH;
 				printf("Using HT_PUGH\n");
+			} else if (!strncmp(optarg,"SL_FRASER",10)) {
+				algorithm = SL_FRASER;
+				printf("Using SL_FRASER\n");
 			} else {
 				algorithm = LL_LAZY;
 				printf("Using LL_LAZY\n");
@@ -540,6 +556,7 @@ int main(int argc, char**argv)
 
 	stop = 0;
 
+	levelmax = floor_log_2((unsigned int) initial);
 	maxhtlength = (unsigned int) initial / load_factor;
 	maxbulength = ((unsigned int) range / initial) * load_factor;
 	size_t capacity = initial / load_factor;
@@ -578,6 +595,8 @@ int main(int argc, char**argv)
 			(maxhtlength, maxbulength);
 	} else if (algorithm == HT_PUGH) {
 		set = new HashtablePugh<skey_t, sval_t>(maxhtlength);
+	} else if (algorithm == SL_FRASER) {
+		set = new SkiplistFraser<skey_t, sval_t>(levelmax);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
