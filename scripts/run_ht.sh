@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ds=ll;
+ds=ht;
 set_cpu=0
 repetitions=3
 duration=2000
@@ -73,7 +73,7 @@ do
     if [ $fixed_file_dat -ne 1 ] ; then
 	out="$(hostname).${ds}.i${initial}.u${update}.w${workload}.dat"
     else
-	out="HTdata.${ds}.i${initial}.u${update}.w${workload}.dat"
+	out="data.${ds}.i${initial}.u${update}.w${workload}.dat"
     fi;
 
     echo "### params -i$initial -r$range -u$update / keep $keep of reps $repetitions of dur $duration" | tee data/$out;
