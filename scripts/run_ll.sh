@@ -17,8 +17,8 @@ algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS LL_HARRIS_OPT LL_OPTIK LL_PUGH );
 # params_initial=( 128 512 2048 4096 8192 );
 # params_update=( 100 50  20   10   1 );
 params_initial=(  64 1024 8192 64 1024 8192 );
-params_update=(   40 40   40   80 80   80 );
-params_workload=( 0   0   0    0  0    0);
+params_update=(   40 40   40   40 40   40 );
+params_workload=( 0   0   0    2  2    2);
 
 num_params=${#params_initial[*]};
 
@@ -76,6 +76,6 @@ do
     fi;
 
     echo "### params -i$initial -r$range -u$update / keep $keep of reps $repetitions of dur $duration" | tee data/$out;
-    ./scripts/scalability_rep_simple.sh "$cores" $repetitions $keep "$algos_str" -d$duration -i$initial -r$range -u$update \
+    ./scripts/scalability_rep_simple.sh "$cores" $repetitions $keep "$algos_str" -d$duration -i$initial -r$range -u$update -w$workflow \
 				 | tee -a data/$out;
 done;

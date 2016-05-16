@@ -17,8 +17,8 @@ algos=( HT_HARRIS HT_COPY HT_JAVA HT_OPTIK HT_OPTIK_GL HT_OPTIK_AM HT_PUGH );
 # params_initial=( 128 512 2048 4096 8192 );
 # params_update=( 100 50  20   10   1 );
 params_initial=(  512 8192 65536 512 8192 65536 );
-params_update=(   40  40   40    80  80   80 );
-params_workload=( 0   0   0      0   0    0);
+params_update=(   40  40   40    40  40   40 );
+params_workload=( 0   0   0      2   2    2);
 
 num_params=${#params_initial[*]};
 load_factor=1;
@@ -76,7 +76,7 @@ do
 	out="data.${ds}.i${initial}.u${update}.w${workload}.dat"
     fi;
 
-    echo "### params -i$initial -r$range -u$update / keep $keep of reps $repetitions of dur $duration" | tee data/$out;
-    ./scripts/scalability_rep_simple.sh "$cores" $repetitions $keep "$algos_str" -d$duration -i$initial -r$range -u$update -l$load_factor \
+    echo "### params -w$workload -i$initial -r$range -u$update / keep $keep of reps $repetitions of dur $duration" | tee data/$out;
+    ./scripts/scalability_rep_simple.sh "$cores" $repetitions $keep "$algos_str" -d$duration -i$initial -r$range -u$update -l$load_factor -w$workload \
 				 | tee -a data/$out;
 done;
