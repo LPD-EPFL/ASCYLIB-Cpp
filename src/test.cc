@@ -25,6 +25,8 @@
 #include"hashtable_optik_arraymap.h"
 #include"hashtable_pugh.h"
 #include"skiplist_fraser.h"
+#include"skiplist_herlihy_lb.h"
+#include"skiplist_herlihy_lf.h"
 
 #define ASSERT_SIZE 1
 
@@ -37,7 +39,7 @@ enum algorithms {
 	LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ,
 	HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK, HT_OPTIK_GL, HT_OPTIK_AM,
 	HT_PUGH,
-	SL_FRASER
+	SL_FRASER, SL_HERLIHY_LB, SL_HERLIHY_LF
 };
 algorithms algorithm;
 
@@ -153,6 +155,10 @@ enum algorithms parse_algorithm(char *algorithm_string)
 		return HT_PUGH;
 	} else if (!strncmp(optarg,"SL_FRASER",10)) {
 		return SL_FRASER;
+	} else if (!strncmp(optarg,"SL_HERLIHY_LB",14)) {
+		return SL_HERLIHY_LB;
+	} else if (!strncmp(optarg,"SL_HERLIHY_LF",14)) {
+		return SL_HERLIHY_LF;
 	}
 	return LL_LAZY;
 }
@@ -540,7 +546,7 @@ int main(int argc, char**argv)
 			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
 			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK, HT_OPTIK_GL\n"
 			"        HT_OPTIK_AM, HT_PUGH\n"
-			"        SL_FRASER\n"
+			"        SL_FRASER, SL_HERLIHY_LB, SL_HERLIHY_LF\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -673,6 +679,10 @@ int main(int argc, char**argv)
 		set = new HashtablePugh<skey_t, sval_t>(maxhtlength);
 	} else if (algorithm == SL_FRASER) {
 		set = new SkiplistFraser<skey_t, sval_t>(levelmax);
+	} else if (algorithm == SL_HERLIHY_LB) {
+		set = new SkiplistHerlihyLB<skey_t, sval_t>(levelmax);
+	} else if (algorithm == SL_HERLIHY_LF) {
+		set = new SkiplistHerlihyLF<skey_t, sval_t>(levelmax);
 	} else {
 		set = new LinkedListLazy<skey_t,sval_t>();
 	}
