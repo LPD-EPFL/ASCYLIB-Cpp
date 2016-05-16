@@ -35,21 +35,9 @@ extern "C" {
 // Line 366
 enum algorithms {
 	AM_OPTIK,
-	LL_LAZY,
-	LL_COPY,
-	LL_COUPLING,
-	LL_HARRIS,
-	LL_HARRIS_OPT,
-	LL_OPTIK,
-	LL_OPTIK_GL,
-	LL_PUGH,
-	LL_SEQ,
-	HT_HARRIS,
-	HT_COPY,
-	HT_JAVA,
-	HT_OPTIK,
-	HT_OPTIK_GL,
-	HT_OPTIK_AM,
+	LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT,
+	LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ,
+	HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK, HT_OPTIK_GL, HT_OPTIK_AM,
 	HT_PUGH,
 	SL_FRASER
 };
@@ -71,6 +59,7 @@ size_t update = DEFAULT_UPDATE;
 size_t num_threads = DEFAULT_NB_THREADS;
 size_t duration = DEFAULT_DURATION;
 int test_verbose = 0;
+int workload = 0;
 
 size_t print_vals_num = 100;
 size_t pf_vals_num = 1023;
@@ -129,6 +118,165 @@ typedef struct thread_data
 	//DS_TYPE* set;
 } thread_data_t;
 
+enum algorithms parse_algorithm(char *algorithm_string)
+{
+	printf("Using %s\n", algorithm_string);
+	if (!strncmp(optarg,"LL_COPY",8)) {
+		return LL_COPY;
+	} else if (!strncmp(optarg,"LL_COUPLING",12)) {
+		return LL_COUPLING;
+	} else if (!strncmp(optarg,"LL_HARRIS_OPT",14)) {
+		return LL_HARRIS_OPT;
+	} else if (!strncmp(optarg,"LL_HARRIS",10)) {
+		return LL_HARRIS;
+	} else if (!strncmp(optarg,"LL_OPTIK_GL",12)) {
+		return LL_OPTIK_GL;
+	} else if (!strncmp(optarg,"LL_OPTIK",9)) {
+		return LL_OPTIK;
+	} else if (!strncmp(optarg,"LL_PUGH",8)) {
+		return LL_PUGH;
+	} else if (!strncmp(optarg,"LL_SEQ",7)) {
+		return LL_SEQ;
+	} else if (!strncmp(optarg,"HT_HARRIS",10)) {
+		return HT_HARRIS;
+	} else if (!strncmp(optarg,"HT_COPY",8)) {
+		return HT_COPY;
+	} else if (!strncmp(optarg,"HT_JAVA",8)) {
+		return HT_JAVA;
+	} else if (!strncmp(optarg,"HT_OPTIK_GL",12)) {
+		return HT_OPTIK_GL;
+	} else if (!strncmp(optarg,"HT_OPTIK",9)) {
+		return HT_OPTIK;
+	} else if (!strncmp(optarg,"AM_OPTIK",9)) {
+		return AM_OPTIK;
+	} else if (!strncmp(optarg,"HT_OPTIK_AM",12)) {
+		return HT_OPTIK_AM;
+	} else if (!strncmp(optarg,"HT_PUGH",8)) {
+		return HT_PUGH;
+	} else if (!strncmp(optarg,"SL_FRASER",10)) {
+		return SL_FRASER;
+	}
+	return LL_LAZY;
+}
+
+void normal_workload_test_loop(Search<skey_t,sval_t> *set,
+			uint64_t &my_putting_count,
+			uint64_t &my_putting_count_succ,
+			uint64_t &my_getting_count,
+			uint64_t &my_getting_count_succ,
+			uint64_t &my_removing_count,
+			uint64_t &my_removing_count_succ)
+{
+	uint64_t key;
+	uint32_t scale_rem = (uint32_t) (update_rate * UINT_MAX);
+	uint32_t scale_put = (uint32_t) (put_rate * UINT_MAX);
+	unsigned int c = 0;
+	//sval_t val = 0;
+	int number = 15;
+	sval_t val = &number;
+	while (stop == 0) {
+		c = (uint32_t)(my_random(&(seeds[0]),&(seeds[1]),&(seeds[2])));
+		key = (c & rand_max) + rand_min;
+
+		if (unlikely(c <= scale_put)) {
+			int res;
+			START_TS(1);
+			res = set->insert(key,val);
+			if (res) {
+				END_TS(1, my_putting_count_succ);
+				ADD_DUR(my_putting_succ);
+				my_putting_count_succ++;
+			}
+			END_TS_ELSE(4, my_putting_count - my_putting_count_succ,
+				my_putting_fail);
+			my_putting_count++;
+		} else if (unlikely(c <= scale_rem)) {
+			sval_t removed;
+			START_TS(2);
+			removed = set->remove(key);
+			if (removed != 0) {
+				END_TS(2, my_removing_count_succ);
+				ADD_DUR(my_removing_succ);
+				my_removing_count_succ++;
+			}
+			END_TS_ELSE(5, my_removing_count - my_removing_count_succ,
+				my_removing_fail);
+			my_removing_count++;
+		} else {
+			sval_t res;
+			START_TS(0);
+			res = (sval_t) set->search(key);
+			if (res != 0) {
+				END_TS(0, my_getting_count_succ);
+				ADD_DUR(my_getting_succ);
+				my_getting_count_succ++;
+			}
+			END_TS_ELSE(3, my_getting_count - my_getting_count_succ,
+				my_getting_fail);
+			my_getting_count++;
+		}
+	}
+}
+
+void skewed_workload_test_loop(Search<skey_t,sval_t> *set,
+			uint64_t &my_putting_count,
+			uint64_t &my_putting_count_succ,
+			uint64_t &my_getting_count,
+			uint64_t &my_getting_count_succ,
+			uint64_t &my_removing_count,
+			uint64_t &my_removing_count_succ)
+{
+	uint64_t key;
+	uint32_t scale_rem = (uint32_t) (update_rate * UINT_MAX);
+	uint32_t scale_put = (uint32_t) (put_rate * UINT_MAX);
+	unsigned int c = 0;
+	int number = 15;
+	sval_t val = &number;
+	while (stop == 0) {
+		c = (uint32_t)(my_random(&(seeds[0]),&(seeds[1]),&(seeds[2])));
+		key = rand_max - zipf_get_next(__zipf_arr) + rand_min;
+		ZIPF_STATS_DO(__zipf_arr->stats[key]++);
+
+		if (unlikely(c <= scale_put)) {
+			int res;
+			START_TS(1);
+			res = set->insert(key,val);
+			if (res) {
+				END_TS(1, my_putting_count_succ);
+				ADD_DUR(my_putting_succ);
+				my_putting_count_succ++;
+			}
+			END_TS_ELSE(4, my_putting_count - my_putting_count_succ,
+				my_putting_fail);
+			my_putting_count++;
+		} else if (unlikely(c <= scale_rem)) {
+			sval_t removed;
+			START_TS(2);
+			removed = set->remove(key);
+			if(removed != 0) {
+				END_TS(2, my_removing_count_succ);
+				ADD_DUR(my_removing_succ);
+				my_removing_count_succ++;
+			}
+			END_TS_ELSE(5, my_removing_count - my_removing_count_succ,
+				my_removing_fail);
+			my_removing_count++;
+		} else {
+			sval_t res;
+			START_TS(0);
+			res = (sval_t) set->search(key);
+			if(res != 0) {
+				END_TS(0, my_getting_count_succ);
+				ADD_DUR(my_getting_succ);
+				my_getting_count_succ++;
+			}
+			END_TS_ELSE(3, my_getting_count - my_getting_count_succ,
+			my_getting_fail);
+			my_getting_count++;
+		}
+	}
+}
+
 void* test(void* thread)
 {
 	thread_data_t* td = (thread_data_t*) thread;
@@ -137,9 +285,19 @@ void* test(void* thread)
 	//ssalloc_init();
 
 	Search<skey_t,sval_t>* set = td->set;
-	//Search<int *,int *>* set = td->set;
 
-	THREAD_INIT(ID);
+	//THREAD_INIT(ID);  expanded below -----v
+	if (workload == 2) {
+		if (!ID) {
+			printf("- Creating zipf random numbers array\n");
+		}
+		__zipf_arr = zipf_get_rand_array(ZIPF_ALPHA, 0,
+				rand_max + 1, ID);
+		barrier_cross(&barrier);
+		if (!ID) {
+			printf("- Done\n");
+		}
+	}
 	PF_INIT(3, SSPFD_NUM_ENTRIES, ID);
 
 #if defined(COMPUTE_LATENCY)
@@ -150,7 +308,6 @@ void* test(void* thread)
 	volatile ticks my_removing_succ = 0;
 	volatile ticks my_removing_fail = 0;
 #endif
-
 	uint64_t my_putting_count = 0;
 	uint64_t my_getting_count = 0;
 	uint64_t my_removing_count = 0;
@@ -177,19 +334,14 @@ void* test(void* thread)
 	assert(alloc != NULL);
 	ssmem_alloc_init_fs_size(alloc, SSMEM_DEFAULT_MEM_SIZE, SSMEM_GC_FREE_SET_SIZE, ID);
 #endif
-
 	barrier_cross(&barrier);
 
 	uint64_t key;
-	unsigned int c = 0;
-	uint32_t scale_rem = (uint32_t) (update_rate * UINT_MAX);
-	uint32_t scale_put = (uint32_t) (put_rate * UINT_MAX);
 
 	uint32_t i;
 	uint32_t num_elems_thread = (uint32_t) (initial / num_threads);
 	uint32_t missing = initial % num_threads; //(uint32_t) initial - (num_elems_thread * num_threads);
-	if (ID < missing)
-	{
+	if (ID < missing) {
 		num_elems_thread++;
 	}
 
@@ -201,8 +353,7 @@ void* test(void* thread)
 	/* #endif */
 
 	int one = 1;
-	for(i = 0; i < num_elems_thread; i++)
-	{
+	for(i = 0; i < num_elems_thread; i++) {
 		key = (my_random(&(seeds[0]), &(seeds[1]), &(seeds[2]))
 			% (rand_max + 1)) + rand_min;
 		//if(set->insert(key, NULL) == false) {
@@ -228,55 +379,20 @@ void* test(void* thread)
 
 	RR_START_SIMPLE();
 
-	//sval_t val = 0;
-	int number = 15;
-	sval_t val = &number;
-	while (stop == 0) {
-		c = (uint32_t)(my_random(&(seeds[0]),&(seeds[1]),&(seeds[2])));
-		key = (c & rand_max) + rand_min;
-
-		if (unlikely(c <= scale_put)) {
-			int res;
-			START_TS(1);
-			res = set->insert(key,val); //DS_ADD(set, key, val);
-			if(res) {
-				END_TS(1, my_putting_count_succ);
-				ADD_DUR(my_putting_succ);
-				my_putting_count_succ++;
-			}
-			END_TS_ELSE(4, my_putting_count - my_putting_count_succ,
-				my_putting_fail);
-			my_putting_count++;
-		} else if(unlikely(c <= scale_rem)) {
-			sval_t removed;
-			START_TS(2);
-			removed = set->remove(key); //DS_REMOVE(set, key, algo_type);
-			if(removed != 0) {
-				END_TS(2, my_removing_count_succ);
-				ADD_DUR(my_removing_succ);
-				my_removing_count_succ++;
-			}
-			END_TS_ELSE(5, my_removing_count - my_removing_count_succ,
-				my_removing_fail);
-			my_removing_count++;
-		} else {
-			sval_t res;
-			START_TS(0);
-			res = (sval_t) set->search(key);
-			//res = (sval_t) DS_CONTAINS(set, key, algo_type);
-			if(res != 0)
-			{
-				END_TS(0, my_getting_count_succ);
-				ADD_DUR(my_getting_succ);
-				my_getting_count_succ++;
-			}
-			END_TS_ELSE(3, my_getting_count - my_getting_count_succ,
-			my_getting_fail);
-			my_getting_count++;
-		}
+	if (workload == 2) {
+		skewed_workload_test_loop(set,
+			my_putting_count, my_putting_count_succ,
+			my_getting_count, my_getting_count_succ,
+			my_removing_count, my_removing_count_succ);
+	} else {
+		normal_workload_test_loop(set,
+			my_putting_count, my_putting_count_succ,
+			my_getting_count, my_getting_count_succ,
+			my_removing_count, my_removing_count_succ);
 	}
 
 	barrier_cross(&barrier);
+	RR_STOP_SIMPLE();
 
 	if (!ID) {
 		size_after = set->length();
@@ -312,7 +428,16 @@ void* test(void* thread)
 	ssmem_term();
 	free(alloc);
 #endif
-	THREAD_END();
+	if (workload == 2) {
+		ZIPF_STATS_DO(
+			if (id == 0) {
+				zipf_print_stats(__zipf_arr);
+			}
+			free(__zipf_arr->stats);
+		);
+		free(__zipf_arr);
+	}
+	//THREAD_END();
 	pthread_exit(NULL);
 }
 
@@ -352,6 +477,7 @@ int main(int argc, char**argv)
 		{"vals-pf",                   required_argument, NULL, 'f'},
 		{"load-factor",               required_argument, NULL, 'l'},
 		{"concurrency",               required_argument, NULL, 'c'},
+		{"workflow",                  required_argument, NULL, 'w'},
 		{"algorithm",                 required_argument, NULL, 'a'},
 		{NULL, 0, NULL, 0}
 	};
@@ -359,7 +485,7 @@ int main(int argc, char**argv)
 	int i,c;
 	while(1) {
 		i=0;
-		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:m:el:p:b:v:f:c:x:a:",
+		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:m:el:p:w:b:v:f:c:x:a:",
 			long_options, &i);
 		if (c==-1) {
 			break;
@@ -396,7 +522,7 @@ int main(int argc, char**argv)
 			"  -c, --concurrency <int>\n"
 			"        Concurrency level (for the Java hash table)\n"
 			"  -l, --load-factor <int>\n"
-			"        Elements per bucket (for hash tables)\n"
+			"        Elements per bucket (only available for hash tables)\n"
 			"  -p, --put-rate <int>\n"
 			"        Percentage of put update transactions (should be less than percentage of updates)\n"
 			"  -b, --num-buckets <int>\n"
@@ -405,6 +531,9 @@ int main(int argc, char**argv)
 			"        When using detailed profiling, how many values to print.\n"
 			"  -f, --val-pf <int>\n"
 			"        When using detailed profiling, how many values to keep track of.\n"
+			"  -w, --workload <int>\n"
+			"        0  -- normal workload(default)\n"
+			"        2  -- skewed workload\n"
 			"  -a, --algorithm <name>\n"
 			"        What algorithm to use (LL_LAZY by default).\n"
 			"        Possible options:\n"
@@ -451,62 +580,11 @@ int main(int argc, char**argv)
 		case 'f':
 			pf_vals_num = pow2roundup(atoi(optarg)) - 1;
 			break;
+		case 'w':
+			workload = atoi(optarg);
+			break;
 		case 'a':
-			if (!strncmp(optarg,"LL_COPY",8)) {
-				algorithm = LL_COPY;
-				printf("Using LL_COPY\n");
-			} else if (!strncmp(optarg,"LL_COUPLING",12)) {
-				algorithm = LL_COUPLING;
-				printf("Using LL_COUPLING\n");
-			} else if (!strncmp(optarg,"LL_HARRIS",10)) {
-				algorithm = LL_HARRIS;
-				printf("Using LL_HARRIS\n");
-			} else if (!strncmp(optarg,"LL_HARRIS_OPT",14)) {
-				algorithm = LL_HARRIS_OPT;
-				printf("Using LL_HARRIS_OPT\n");
-			} else if (!strncmp(optarg,"LL_OPTIK",9)) {
-				algorithm = LL_OPTIK;
-				printf("Using LL_OPTIK\n");
-			} else if (!strncmp(optarg,"LL_OPTIK_GL",12)) {
-				algorithm = LL_OPTIK_GL;
-				printf("Using LL_OPTIK_GL\n");
-			} else if (!strncmp(optarg,"LL_PUGH",8)) {
-				algorithm = LL_PUGH;
-				printf("Using LL_PUGH\n");
-			} else if (!strncmp(optarg,"LL_SEQ",7)) {
-				algorithm = LL_SEQ;
-				printf("Using LL_SEQ\n");
-			} else if (!strncmp(optarg,"HT_HARRIS",10)) {
-				algorithm = HT_HARRIS;
-				printf("Using HT_HARRIS\n");
-			} else if (!strncmp(optarg,"HT_COPY",8)) {
-				algorithm = HT_COPY;
-				printf("Using HT_COPY\n");
-			} else if (!strncmp(optarg,"HT_JAVA",8)) {
-				algorithm = HT_JAVA;
-				printf("Using HT_JAVA\n");
-			} else if (!strncmp(optarg,"HT_OPTIK",9)) {
-				algorithm = HT_OPTIK;
-				printf("Using HT_OPTIK\n");
-			} else if (!strncmp(optarg,"HT_OPTIK_GL",12)) {
-				algorithm = HT_OPTIK_GL;
-				printf("Using HT_OPTIK_GL\n");
-			} else if (!strncmp(optarg,"AM_OPTIK",9)) {
-				algorithm = AM_OPTIK;
-				printf("Using AM_OPTIK\n");
-			} else if (!strncmp(optarg,"HT_OPTIK_AM",12)) {
-				algorithm = HT_OPTIK_AM;
-				printf("Using HT_OPTIK_AM\n");
-			} else if (!strncmp(optarg,"HT_PUGH",8)) {
-				algorithm = HT_PUGH;
-				printf("Using HT_PUGH\n");
-			} else if (!strncmp(optarg,"SL_FRASER",10)) {
-				algorithm = SL_FRASER;
-				printf("Using SL_FRASER\n");
-			} else {
-				algorithm = LL_LAZY;
-				printf("Using LL_LAZY\n");
-			}
+			algorithm = parse_algorithm(optarg);
 			break;
 		case '?':
 		default:
