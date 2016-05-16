@@ -26,6 +26,10 @@
 #include "utils.h"
 #include "latency.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define PREFETCHW_LOCK(lock)                            PREFETCHW(lock)
 
 #if defined(MUTEX)
@@ -521,6 +525,10 @@ none_unlock(volatile ptlock_t* l)
 #  define OPTIK_WITH_GL_DO(a)                 
 
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif	/* _LOCK_IF_H_ */

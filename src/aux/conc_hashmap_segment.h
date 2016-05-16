@@ -3,9 +3,7 @@
 
 #include"ll_simple.h"
 #include <stdlib.h>
-extern "C" {
 #include "lock_if.h"
-}
 
 template<typename K, typename V>
 struct conc_hashmap_segment {

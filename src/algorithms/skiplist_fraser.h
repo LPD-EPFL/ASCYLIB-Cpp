@@ -27,17 +27,17 @@ public:
 		// even though levelmax is used twice here
 		// sometimes the toplevel parameter is NOT levelmax
 		// which is why they are maintained as separate parameters
-		max = sl_simple_allocate(KEY_MAX_MIN::max_value(), (V) 0,
+		max = allocate_sl_simple(KEY_MAX_MIN::max_value(), (V) 0,
 				(volatile sl_simple<K,V>*)NULL, levelmax,
 				size_pad_32, levelmax, 1);
-		min = sl_simple_allocate(KEY_MAX_MIN::min_value(), (V) 0,
+		min = allocate_sl_simple(KEY_MAX_MIN::min_value(), (V) 0,
 				max, levelmax, size_pad_32, levelmax, 1);
 		head = min;
 	}
 
 	~SkiplistFraser()
 	{
-		sl_simple<K,V> *node, *next;
+		volatile sl_simple<K,V> *node, *next;
 
 		node = head;
 		while (node != NULL) {
@@ -68,7 +68,7 @@ public:
 		volatile sl_simple<K,V> *succs[FRASER_MAX_MAX_LEVEL],
 			*preds[FRASER_MAX_MAX_LEVEL];
 		int result = 0;
-		new_node = sl_simple_initialize(key, val, size_pad_32,
+		new_node = allocate_sl_simple_unlinked(key, val, size_pad_32,
 				get_rand_level(), 0);
 		PARSE_START_TS(1);
 retry:

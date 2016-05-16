@@ -1,10 +1,8 @@
 #ifndef _LINKED_LIST_OPTIK_H_
 #define _LINKED_LIST_OPTIK_H_
 
-extern "C" {
 #include "optik.h"
 #include "utils.h"
-}
 #include "search.h"
 #include "key_max_min.h"
 #include "ll_optik.h"

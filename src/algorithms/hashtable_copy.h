@@ -3,11 +3,9 @@
 
 #include<assert.h>
 #include<stdlib.h>
-extern "C" {
 #include"lock_if.h"
 #include"ssmem.h"
 #include"utils.h"
-}
 #include"search.h"
 #include"ll_array.h"
 #include"linkedlist_copy.h"

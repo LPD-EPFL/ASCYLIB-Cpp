@@ -15,10 +15,8 @@
 #define CHM_MAX_SCAN_RETRIES 64
 
 #include<stdlib.h>
-extern "C" {
 #include"lock_if.h"
 #include"utils.h"
-}
 #include"search.h"
 #include"key_hasher.h"
 #include"conc_hashmap_segment.h"

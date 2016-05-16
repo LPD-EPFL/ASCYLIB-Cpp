@@ -2,10 +2,8 @@
 #define _SL_SIMPLE_H_
 
 #include <stdlib.h>
-extern "C" {
 #include "ssmem.h"
 #include "utils.h"
-}
 
 extern __thread ssmem_allocator_t* alloc;
 
@@ -19,7 +17,7 @@ struct sl_simple {
 };
 
 template<typename K, typename V>
-volatile sl_simple<K,V>* sl_simple_initialize(K key, V val,
+volatile sl_simple<K,V>* allocate_sl_simple_unlinked(K key, V val,
 		unsigned int size_pad_32, int toplevel, int transactional)
 {
 	volatile sl_simple<K,V> *node;
@@ -52,7 +50,7 @@ volatile sl_simple<K,V>* sl_simple_initialize(K key, V val,
 	node = (volatile sl_simple<K,V>*)malloc(ns);
 #endif
 	if (NULL == node) {
-		perror("malloc @ sl_simple_initialize");
+		perror("malloc @ allocate_sl_simple_unlinked");
 		exit(1);
 	}
 	node->key = key;
@@ -66,13 +64,14 @@ volatile sl_simple<K,V>* sl_simple_initialize(K key, V val,
 }
 
 template<typename K, typename V>
-volatile sl_simple<K,V> *sl_simple_allocate(K key, V val,
+volatile sl_simple<K,V> *allocate_sl_simple(K key, V val,
 		volatile sl_simple<K,V> *next, int levelmax,
 		unsigned int size_pad_32, int toplevel, int transactional)
 {
 	volatile sl_simple<K,V> *node;
 
-	node = sl_simple_initialize(key, val, size_pad_32, toplevel, transactional);
+	node = allocate_sl_simple_unlinked(key, val, size_pad_32,
+			toplevel, transactional);
 
 	for (int i=0; i < levelmax; i++) {
 		node->next[i] = next;

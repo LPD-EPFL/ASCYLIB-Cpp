@@ -23,6 +23,10 @@
 #ifndef _H_OPTIK_
 #define _H_OPTIK_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <assert.h>
 #include <getopt.h>
 #include <limits.h>
@@ -861,5 +865,9 @@ optik_revert(optik_t* ol)
 }
 
 #endif	/* OPTIK_VERSION */
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _H_OPTIK_ */

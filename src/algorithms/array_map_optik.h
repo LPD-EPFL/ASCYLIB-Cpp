@@ -4,9 +4,7 @@
 #include<stdlib.h>
 #include<malloc.h>
 #include<assert.h>
-extern "C" {
 #include"optik.h"
-}
 #include"search.h"
 
 template <typename K, typename V>

@@ -23,6 +23,11 @@
 
 #ifndef _COMMON_H_
 #define _COMMON_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <limits.h>
 #include <string.h>
 
@@ -91,5 +96,9 @@ static inline int strkey_compare(strkey_t k1, strkey_t k2) {
 #define DEFAULT_NB_THREADS              1
 #define DEFAULT_RANGE                   (2 * DEFAULT_INITIAL)
 #define DEFAULT_UPDATE                  20
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/*  _COMMON_H_ */

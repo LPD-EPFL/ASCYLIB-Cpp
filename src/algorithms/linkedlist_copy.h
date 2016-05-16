@@ -4,11 +4,9 @@
 #include<assert.h>
 #include<pthread.h>
 #include<stdlib.h>
-extern "C" {
 #include"lock_if.h"
 #include"ssmem.h"
 #include"utils.h"
-}
 #include"search.h"
 #include"ll_array.h"
 #define DEFAULT_ALTERNATE               0

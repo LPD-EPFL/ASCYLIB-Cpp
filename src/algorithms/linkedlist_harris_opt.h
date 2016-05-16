@@ -2,10 +2,8 @@
 #define _LINKEDLIST_HARRIS_OPT_H_
 
 #include<stdlib.h>
-extern "C" {
 #include "ssmem.h"
 #include "atomic_ops.h"
-}
 
 #include "search.h"
 #include "key_max_min.h"

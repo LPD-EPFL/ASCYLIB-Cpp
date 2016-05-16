@@ -3,9 +3,7 @@
 
 #include<stdio.h>
 #include<stdlib.h>
-extern "C" {
 #include"lock_if.h"
-}
 
 extern __thread ssmem_allocator_t* alloc;
 

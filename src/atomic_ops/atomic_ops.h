@@ -27,6 +27,10 @@
 #include <assert.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* We define various atomic operations on memory in a           */
 /* machine-specific way.  Unfortunately, this is complicated    */
 /* by the fact that these may or may not be combined with       */
@@ -344,5 +348,9 @@
 #define AO_TS_T AO_TS_t
 #define AO_T AO_t
 #define AO_TS_VAL AO_TS_VAL_t
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ATOMIC_OPS_H */

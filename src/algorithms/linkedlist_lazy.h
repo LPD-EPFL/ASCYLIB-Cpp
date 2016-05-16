@@ -4,10 +4,8 @@
 #include "search.h"
 #include "ll_marked.h"
 #include "key_max_min.h"
-extern "C" {
 #include "lock_if.h"
 #include "ssmem.h"
-}
 
 #define LAZY_RO_LATEX RO_FAIL
 #define DEFAULT_LOCKTYPE                2

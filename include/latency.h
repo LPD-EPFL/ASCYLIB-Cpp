@@ -34,6 +34,10 @@
 #ifndef _LATENCY_H_
 #define _LATENCY_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if RETRY_STATS == 1
 #  define RETRY_STATS_VARS						\
   __thread size_t __parse_try, __update_try, __cleanup_try, __lock_try, __lock_queue, __lock_try_once, \
@@ -375,5 +379,9 @@ print_latency_stats(int ID, size_t num_entries, size_t num_entries_print)
 #  endif
 #endif
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _LATENCY_H_ */

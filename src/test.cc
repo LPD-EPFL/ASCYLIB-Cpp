@@ -2,12 +2,10 @@
 #include<getopt.h>
 #include<pthread.h>
 #include"search.h"
-extern "C" {
 #include"common.h"
 #include"utils.h"
 #include"rapl_read.h"
 #include"ssmem.h"
-}
 #include"array_map_optik.h"
 #include"linkedlist_lazy.h"
 //#include"linkedlist_lazy_cache.h"

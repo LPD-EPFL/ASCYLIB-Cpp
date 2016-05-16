@@ -2,9 +2,7 @@
 #define _LINKED_LIST_PUGH_H_
 
 #include <stdlib.h>
-extern "C" {
 #include "utils.h"
-}
 #include "search.h"
 #include "ll_locked.h"
 #include "key_max_min.h"

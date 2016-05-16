@@ -35,6 +35,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* **************************************************************************************** */
 /* parameters */
 /* **************************************************************************************** */
@@ -223,6 +227,9 @@ void ssmem_all_list_print(ssmem_allocator_t* a, int id);
 #  define FAI_U32(a) arch_atomic_increment(a)
 #endif
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _SSMEM_H_ */
 

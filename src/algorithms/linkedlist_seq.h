@@ -2,9 +2,7 @@
 #define _LINKED_LIST_SEQ_H_
 
 #include <stdlib.h>
-extern "C" {
 #include "utils.h"
-}
 #include "key_max_min.h"
 #include "search.h"
 #include "ll_simple.h"
