@@ -8,7 +8,7 @@ keep=median
 cores=ppopp
 #ub=BINARIES PLACEMENT
 #uo=DATA PLACEMENT FOLDER
-fixed_file_dat=1
+fixed_file_dat=0
 
 mkdir -p data
 
