@@ -23,10 +23,12 @@ params_workload=( 0   0   0    2  2    2);
 num_params=${#params_initial[*]};
 
 max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
+max_cores=$(( $max_cores * 3 / 2 ))
 if [[ $max_cores -eq 1 ]] ; then
 	max_cores=4
 fi
-increment=$(($max_cores/8))
+increment=$(($max_cores/2))
+increment=2
 if [[ $increment -eq 0 ]] ; then
 	increment=1
 fi
