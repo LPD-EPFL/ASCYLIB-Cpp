@@ -12,7 +12,7 @@ fixed_file_dat=1
 
 mkdir -p data
 
-algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS LL_HARRIS_OPT LL_OPTIK LL_PUGH );
+algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS_OPT LL_OPTIK_GL LL_OPTIK LL_PUGH );
 
 # params_initial=( 128 512 2048 4096 8192 );
 # params_update=( 100 50  20   10   1 );
@@ -22,12 +22,12 @@ params_workload=( 0   0   0    2  2    2);
 
 num_params=${#params_initial[*]};
 
-max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
+#max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
 max_cores=$(( $max_cores * 3 / 2 ))
 if [[ $max_cores -eq 1 ]] ; then
 	max_cores=4
 fi
-increment=$(($max_cores/2))
+#increment=$(($max_cores/2))
 increment=2
 if [[ $increment -eq 0 ]] ; then
 	increment=1
