@@ -54,7 +54,7 @@ algos_stripped=$(echo $algos | sed -e 's/bin//g' -e 's/[\.\/]//g');
 print_n "#       " "%-13s " "$algos_stripped" "\n"
 
 
-print_rep "#cores  " $num_algos "throughput   " "\n"
+print_rep "#cores  " $num_algos "throughput    " "\n"
 
 
 printf "%-8d" 1;
