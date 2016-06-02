@@ -51,7 +51,7 @@ params="$@";
 
 algos_stripped=$(echo $algos | sed -e 's/bin//g' -e 's/[\.\/]//g');
 
-print_n "#       " "%-12s " "$algos_stripped" "\n"
+print_n "#       " "%-13s " "$algos_stripped" "\n"
 
 
 print_rep "#cores  " $num_algos "throughput   " "\n"
@@ -63,7 +63,7 @@ for algo in $algos;
 do
     thr=$($run_script ./bin/test -a $algo $params -n1);
     thr1="$thr1 $thr";
-    printf "%-12d " $thr;
+    printf "%-13d " $thr;
     # printf "%-8.2f" 100.00;
     # printf "%-12d" 1;
 done;
@@ -85,7 +85,7 @@ do
 	i=$(($i+1));
 	thr1p=$(get_n $i "$thr1");
 	thr=$($run_script ./bin/test -a $algo $params -n$c);
-	printf "%-12d " $thr;
+	printf "%-13d " $thr;
 	# scl=$(echo "$thr/$thr1p" | bc -l);
 	# linear_p=$(echo "100*(1-(($c-$scl)/$c))" | bc -l);
 	# printf "%-8.2f" $linear_p;
