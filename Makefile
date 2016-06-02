@@ -1,7 +1,7 @@
 .PHONY: main all clean
 
 #TEST_FILE := mytest
-TEST_FILE := test
+TEST_FILE := test_search
 SEARCH_HEADER_FILE := search.h
 ALGORITHMS := linkedlist_copy linkedlist_coupling linkedlist_harris
 ALGORITHMS += linkedlist_harris_opt linkedlist_lazy linkedlist_optik
