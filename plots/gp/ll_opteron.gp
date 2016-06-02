@@ -6,7 +6,7 @@ PSIZE = "set size 0.5, 0.6"
 
 set key horiz maxrows 1
 
-set output "eps/ll_xeon.eps"
+set output "eps/ll_opteron.eps"
 
 set terminal postscript color "Helvetica" 24 eps enhanced
 set rmargin 0
@@ -50,15 +50,15 @@ set label 2 "C++" at screen 0.018, screen 0.18 rotate by 90 font ',30' textcolor
 #  C  #
 #######
 
-FILE0 = '"cdata/lpdxeon2680.ll.i8192.u40.w0.dat"'
-FILE1 = '"cdata/lpdxeon2680.ll.i1024.u40.w0.dat"'
-FILE2 = '"cdata/lpdxeon2680.ll.i64.u40.w0.dat"'
-FILE3 = '"cdata/lpdxeon2680.ll.i8192.u40.w2.dat"'
-FILE4 = '"cdata/lpdxeon2680.ll.i64.u40.w2.dat"'
+FILE0 = '"cdata/lpd48core.ll.i8192.u40.w0.dat"'
+FILE1 = '"cdata/lpd48core.ll.i1024.u40.w0.dat"'
+FILE2 = '"cdata/lpd48core.ll.i64.u40.w0.dat"'
+FILE3 = '"cdata/lpd48core.ll.i8192.u40.w2.dat"'
+FILE4 = '"cdata/lpd48core.ll.i64.u40.w2.dat"'
 
 unset xlabel
 set xrange [0:61]
-set xtics ( 1, 10, 20, 30, 40, 50, 60 ) offset 0,0.4
+set xtics ( 1, 12, 24, 36, 48, 56, 64 ) offset 0,0.4
 unset key
 
 set size plot_size_x, plot_size_y
@@ -77,7 +77,7 @@ set lmargin 4
 set ylabel ""
 unset ylabel
 set title @PLOT1
-set ytics 1
+# set ytics 1
 plot for [i=1:n_algo] @FILE1 using ($1):(column(i+1) / DIV) ls i with linespoints
 
 set origin 1.0 + graphs_x_offs, top_row_y
@@ -111,15 +111,15 @@ plot for [i=1:n_algo] @FILE4 using ($1):(column(i+1) / DIV) ls i with linespoint
 #######
 # C++ #
 #######
-FILE0 = '"data/lpdxeon2680.ll.i8192.u40.w0.dat"'
-FILE1 = '"data/lpdxeon2680.ll.i1024.u40.w0.dat"'
-FILE2 = '"data/lpdxeon2680.ll.i64.u40.w0.dat"'
-FILE3 = '"data/lpdxeon2680.ll.i8192.u40.w2.dat"'
-FILE4 = '"data/lpdxeon2680.ll.i64.u40.w2.dat"'
+FILE0 = '"data/lpd48core.ll.i8192.u40.w0.dat"'
+FILE1 = '"data/lpd48core.ll.i1024.u40.w0.dat"'
+FILE2 = '"data/lpd48core.ll.i64.u40.w0.dat"'
+FILE3 = '"data/lpd48core.ll.i8192.u40.w2.dat"'
+FILE4 = '"data/lpd48core.ll.i64.u40.w2.dat"'
 
 set xlabel "# Threads" offset 0, 0.75 font ",28"
 set xrange [0:60]
-set xtics ( 1, 10, 20, 30, 40, 50, 60 ) offset 0,0.4
+set xtics ( 1, 12, 24, 36, 48, 56, 64 ) offset 0,0.4
 
 unset title
 
@@ -127,14 +127,14 @@ set lmargin 3
 @PSIZE
 set origin 0.0 + graphs_x_offs, bottom_row_y
 set ylabel 'Throughput (Mops/s)' offset 2,-0.5
-set ytics 0.05
+set ytics 0.15
 plot for [i=1:n_algo] @FILE0 using ($1):(column(i+1) / DIV) ls i with linespoints
 
 set origin 0.5 + graphs_x_offs, bottom_row_y
 @PSIZE
 set lmargin 4
 @YTICS
-set ytics 0.6
+set ytics 1
 set ylabel ""
 unset ylabel
 plot for [i=1:n_algo] @FILE1 using ($1):(column(i+1) / DIV) ls i with linespoints

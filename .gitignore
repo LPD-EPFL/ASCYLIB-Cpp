@@ -1,4 +1,6 @@
 bin/
 build/
+data/zipf_rand*.dat
+data/*.tmp
 *.o
 .*.swp
