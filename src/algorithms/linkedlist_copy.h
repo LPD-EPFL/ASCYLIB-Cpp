@@ -5,7 +5,6 @@
 #include<pthread.h>
 #include<stdlib.h>
 #include"lock_if.h"
-#include"ssmem.h"
 #include"utils.h"
 #include"search.h"
 #include"ll_array.h"
@@ -23,7 +22,7 @@ class LinkedListCopy : public Search<K,V>
 	public:
 	LinkedListCopy()
 	{
-		cow = (copy_on_write_t*)malloc(sizeof(copy_on_write_t));
+		cow = (copy_on_write*)malloc(sizeof(copy_on_write));
 		assert(cow != NULL);
 		cow->lock = (ptlock_t*)malloc(sizeof(ptlock_t));
 		assert(cow->lock != NULL);
@@ -112,7 +111,7 @@ class LinkedListCopy : public Search<K,V>
 			to_delete = all_old;
 		}
 		UNLOCK_A(cow->lock);
-		cpy_delete_copy(alloc, (volatile ll_array<K,V> *)to_delete);
+		cpy_delete_copy<K,V>(alloc, (volatile ll_array<K,V> *)to_delete);
 		return removed;
 	}
 
@@ -122,7 +121,7 @@ class LinkedListCopy : public Search<K,V>
 	}
 
 	private:
-		typedef /*ALIGN but maybe not necessary*/ struct copy_on_write
+		struct copy_on_write
 		{
 			union
 			{
@@ -133,23 +132,8 @@ class LinkedListCopy : public Search<K,V>
 				};
 				uint8_t padding[CACHE_LINE_SIZE];
 			};
-		} copy_on_write_t;
-		copy_on_write_t* cow;
+		};
+		copy_on_write* cow;
 		size_t array_ll_fixed_size;
-
-		inline void cpy_delete_copy(ssmem_allocator_t* alloc,
-				volatile ll_array<K,V>* a)
-		{
-#if GC == 1
-
-#	if CPY_ON_WRITE_USE_MEM_RELEAS == 1
-			SSMEM_SAFE_TO_RECLAIM();
-			ssmem_release(alloc, (void*) a);
-#	else
-			ssmem_free(alloc, (void*) a);
-#	endif
-
-#endif
-		}
 };
 #endif

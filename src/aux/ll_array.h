@@ -41,4 +41,20 @@ inline volatile ll_array<K,V> *allocate_ll_array(size_t size)
 	all->nodes = (node_ll<K,V> *) (uintptr_t)all + sizeof(ll_array<K,V>);
 	return all;
 }
+
+template <typename K, typename V>
+inline void cpy_delete_copy(ssmem_allocator_t* alloc,
+		volatile ll_array<K,V>* a)
+{
+#if GC == 1
+
+#       if CPY_ON_WRITE_USE_MEM_RELEAS == 1
+	SSMEM_SAFE_TO_RECLAIM();
+	ssmem_release(alloc, (void*) a);
+#       else
+	ssmem_free(alloc, (void*) a);
+#       endif
+
+#endif
+}
 #endif
