@@ -11,6 +11,7 @@ cores=ppopp
 fixed_file_dat=0
 
 mkdir -p data
+make
 
 algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS_OPT LL_OPTIK_GL LL_OPTIK LL_PUGH );
 
