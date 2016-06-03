@@ -84,7 +84,7 @@ do
     do
 	i=$(($i+1));
 	thr1p=$(get_n $i "$thr1");
-	thr=$($run_script ./bin/test -a $algo $params -n$c);
+	thr=$($run_script ./bin/test_search -a $algo $params -n$c);
 	printf "%-13d " $thr;
 	# scl=$(echo "$thr/$thr1p" | bc -l);
 	# linear_p=$(echo "100*(1-(($c-$scl)/$c))" | bc -l);
