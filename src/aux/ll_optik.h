@@ -8,12 +8,17 @@
 extern __thread ssmem_allocator_t* alloc;
 
 template<typename K, typename V>
-struct ll_optik
+struct ALIGNED(CACHE_LINE_SIZE) ll_optik
 {
-	K key;                   /* 8 */
-	V val;                   /* 16 */
-	volatile struct ll_optik<K,V> *next; /* 24 */
-	volatile optik_t lock;       /* 32 */
+	union {
+		struct {
+			K key;                   /* 8 */
+			V val;                   /* 16 */
+			volatile struct ll_optik<K,V> *next; /* 24 */
+			volatile optik_t lock;       /* 32 */
+		};
+		uint8_t padding[CACHE_LINE_SIZE];
+	};
 };
 
 template<typename K, typename V>
@@ -26,7 +31,7 @@ volatile ll_optik<K,V>* allocate_ll_optik(K key, V value,
 		ssmem_alloc(alloc, sizeof(ll_optik<K,V>));
 #else
 	new_node = (volatile ll_optik<K,V> *)
-		malloc(sizeof(ll_optik<K,V>));
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_optik<K,V>));
 #endif
 	if (new_node==NULL) {
 		perror("malloc @ allocate_ll_marked");
@@ -49,7 +54,8 @@ volatile ll_optik<K,V>* initialize_ll_optik(
 		K key, V value, volatile ll_optik<K,V> *next)
 {
 	volatile ll_optik<K,V> *new_node;
-	new_node = (volatile ll_optik<K,V> *) malloc(sizeof(ll_optik<K,V>));
+	new_node = (volatile ll_optik<K,V> *)
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_optik<K,V>));
 	if (new_node==NULL) {
 		perror("malloc @ initialize_ll_optik");
 		exit(1);

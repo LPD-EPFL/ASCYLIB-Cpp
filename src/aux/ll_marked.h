@@ -41,7 +41,7 @@ volatile ll_marked<K,V>* allocate_ll_marked(K key, V value,
 		ssmem_alloc(alloc, sizeof(ll_marked<K,V>));
 #else
 	new_node = (volatile ll_marked<K,V> *)
-		malloc(sizeof(ll_marked<K,V>));
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_marked<K,V>));
 #endif
 	if (new_node==NULL) {
 		perror("malloc @ allocate_ll_marked");
@@ -65,7 +65,8 @@ volatile ll_marked<K,V>* initialize_ll_marked(
 		K key, V value, volatile ll_marked<K,V> *next)
 {
 	volatile ll_marked<K,V> *new_node;
-	new_node = (volatile ll_marked<K,V> *) malloc(sizeof(ll_marked<K,V>));
+	new_node = (volatile ll_marked<K,V> *)
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_marked<K,V>));
 	if (new_node==NULL) {
 		perror("malloc @ initialize_ll_marked");
 		exit(1);

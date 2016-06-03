@@ -24,7 +24,7 @@ volatile ll_simple<K,V> *initialize_ll_simple(K key, V val,
 {
 	volatile ll_simple<K,V> *node;
 	node = (volatile ll_simple<K,V> *)
-		alligned_alloc(CACHE_LINE_SIZE, sizeof(ll_simple<K,V>));
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_simple<K,V>));
 	if (node == NULL) {
 		perror("malloc @ initialize_ll_simple");
 		exit(1);
