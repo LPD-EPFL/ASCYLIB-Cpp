@@ -10,12 +10,17 @@ extern __thread ssmem_allocator_t* alloc;
 template<typename K, typename V>
 struct ll_locked
 {
-	K key;                   /* 8 */
-	V val;                   /* 16 */
-	volatile struct ll_locked<K,V> *next; /* 24 */
+	union{
+		struct {
+			K key;                   /* 8 */
+			V val;                   /* 16 */
+			volatile struct ll_locked<K,V> *next; /* 24 */
 #if !defined(LL_GLOBAL_LOCK)
-	volatile ptlock_t lock;       /* 32 */
+			volatile ptlock_t lock;       /* 32 */
 #endif
+		};
+		uint8_t padding[CACHE_LINE_SIZE];
+	};
 };
 
 template<typename K, typename V>
@@ -51,7 +56,9 @@ volatile ll_locked<K,V>* initialize_ll_locked(
 		K key, V value, volatile ll_locked<K,V> *next)
 {
 	volatile ll_locked<K,V> *new_node;
-	new_node = (volatile ll_locked<K,V> *) malloc(sizeof(ll_locked<K,V>));
+	//new_node = (volatile ll_locked<K,V> *) malloc(sizeof(ll_locked<K,V>));
+	new_node = (volatile ll_locked<K,V> *)
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_locked<K,V>));
 	if (new_node==NULL) {
 		perror("malloc @ initialize_ll_locked");
 		exit(1);
