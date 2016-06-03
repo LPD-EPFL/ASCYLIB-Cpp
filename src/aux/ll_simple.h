@@ -7,11 +7,15 @@
 extern __thread ssmem_allocator_t* alloc;
 
 template <typename K, typename V>
-struct ll_simple {
-	K key;
-	V val;
-	volatile struct ll_simple *next;
-	uint8_t padding32[8];
+struct ALIGNED(CACHE_LINE_SIZE) ll_simple {
+	union {
+		struct {
+			K key;
+			V val;
+			volatile struct ll_simple *next;
+		};
+		uint8_t padding32[CACHE_LINE_SIZE];
+	};
 };
 
 template <typename K, typename V>
@@ -20,7 +24,7 @@ volatile ll_simple<K,V> *initialize_ll_simple(K key, V val,
 {
 	volatile ll_simple<K,V> *node;
 	node = (volatile ll_simple<K,V> *)
-		malloc(sizeof(ll_simple<K,V>));
+		alligned_alloc(CACHE_LINE_SIZE, sizeof(ll_simple<K,V>));
 	if (node == NULL) {
 		perror("malloc @ initialize_ll_simple");
 		exit(1);
@@ -45,7 +49,8 @@ volatile ll_simple<K,V> *allocate_ll_simple(K key, V val,
 	node = (volatile ll_simple<K,V> *)
 		ssmem_alloc(alloc, sizeof(ll_simple<K,V>));
 #else
-	node = (volatile ll_simple<K,V> *) malloc(sizeof(ll_simple<K,V>));
+	node = (volatile ll_simple<K,V> *)
+		aligned_alloc(CACHE_LINE_SIZE, sizeof(ll_simple<K,V>));
 #endif
 	if (node == NULL) {
 		perror("malloc @ allocate_ll_simple");
@@ -78,6 +83,5 @@ void ll_simple_delete(volatile ll_simple<K,V> *node)
 	free( (void*)node );
 #endif
 }
-
 
 #endif
