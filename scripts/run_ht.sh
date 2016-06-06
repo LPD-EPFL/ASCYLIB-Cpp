@@ -8,26 +8,30 @@ keep=median
 cores=ppopp
 #ub=BINARIES PLACEMENT
 #uo=DATA PLACEMENT FOLDER
-fixed_file_dat=1
+fixed_file_dat=0
 
 mkdir -p data
+make
 
-algos=( HT_HARRIS HT_COPY HT_JAVA HT_OPTIK HT_OPTIK_GL HT_OPTIK_AM HT_PUGH );
+#algos=( HT_HARRIS HT_COPY HT_JAVA HT_OPTIK HT_OPTIK_GL HT_OPTIK_AM HT_PUGH );
+algos=( HT_HARRIS HT_JAVA HT_OPTIK HT_OPTIK_GL HT_PUGH );
 
 # params_initial=( 128 512 2048 4096 8192 );
 # params_update=( 100 50  20   10   1 );
 params_initial=(  512 8192 65536 512 8192 65536 );
 params_update=(   40  40   40    40  40   40 );
-params_workload=( 0   0   0      2   2    2);
+params_workload=( 0   0    0     2   2    2);
 
 num_params=${#params_initial[*]};
 load_factor=1;
 
 max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
+max_cores=$(($max_cores*3/2))
 if [[ $max_cores -eq 1 ]] ; then
 	max_cores=4
 fi
 increment=$(($max_cores/8))
+increment=2
 if [[ $increment -eq 0 ]] ; then
 	increment=1
 fi
