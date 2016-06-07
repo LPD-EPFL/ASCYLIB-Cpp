@@ -29,6 +29,12 @@ ifeq ($(SET_CPU),0)
         CPPFLAGS += -DNO_SET_CPU
 endif
 
+ifeq ($(INIT), all)
+        CFLAGS += -DINITIALIZE_FROM_ONE=0
+else
+        CFLAGS += -DINITIALIZE_FROM_ONE=1
+endif
+
 # Compile with global lock
 ifeq ($(GRANULARITY),GLOBAL_LOCK)
         CPPFLAGS += -DLL_GLOBAL_LOCK

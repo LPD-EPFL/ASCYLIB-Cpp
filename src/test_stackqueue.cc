@@ -208,9 +208,9 @@ void* test(void* thread)
 		num_elems_thread++;
 	}
 
-	 #if INITIALIZE_FROM_ONE == 1
+#if INITIALIZE_FROM_ONE == 1
 	   num_elems_thread = (ID == 0) * initial;
-	 #endif
+#endif
 
 	for(i = 0; i < num_elems_thread; i++) {
 		key = (my_random(&(seeds[0]), &(seeds[1]), &(seeds[2]))

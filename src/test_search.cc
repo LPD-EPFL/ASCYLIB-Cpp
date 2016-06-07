@@ -355,12 +355,14 @@ void* test(void* thread)
 		num_elems_thread++;
 	}
 
-	/* do not initialize from one for llcopy */
-	/* otherwise GC does not work properly */
-	/* #if INITIALIZE_FROM_ONE == 1 */
-	/*   num_elems_thread = (ID == 0) * initial; */
-	/*   key = range; */
-	/* #endif */
+#if INITIALIZE_FROM_ONE == 1
+	// do not initialize from one for llcopy
+	// otherwise GC does not work properly
+	if (algorithm != LL_COPY) {
+		num_elems_thread = (ID == 0) * initial;
+		key = range;
+	}
+#endif
 
 	int one = 1;
 	for(i = 0; i < num_elems_thread; i++) {
