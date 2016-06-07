@@ -487,7 +487,7 @@ int main(int argc, char**argv)
 		{"vals-pf",                   required_argument, NULL, 'f'},
 		{"load-factor",               required_argument, NULL, 'l'},
 		{"concurrency",               required_argument, NULL, 'c'},
-		{"workflow",                  required_argument, NULL, 'w'},
+		{"workload",                  required_argument, NULL, 'w'},
 		{"algorithm",                 required_argument, NULL, 'a'},
 		{NULL, 0, NULL, 0}
 	};
