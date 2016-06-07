@@ -1,5 +1,5 @@
-#ifndef _QUEUE_MS_LB_H_
-#define _QUEUE_MS_LB_H_
+#ifndef _QUEUE_MS_HYBRID_H_
+#define _QUEUE_MS_HYBRID_H_
 
 #include<stdlib.h>
 #include"stack_queue.h"
@@ -9,14 +9,14 @@
 #include"queue_node.h"
 
 template <typename T>
-class QueueMSLB : public StackQueue<T>
+class QueueMSHybrid : public StackQueue<T>
 {
 public:
-	QueueMSLB()
+	QueueMSHybrid()
 	{
 		set = (queue*) aligned_alloc(CACHE_LINE_SIZE, sizeof(queue));
 		if (NULL == set) {
-			perror("QueueMSLB");
+			perror("QueueMSHybrid");
 			exit(1);
 		}
 		queue_node<T>* node = (queue_node<T>*)
@@ -26,7 +26,7 @@ public:
 		set->tail = node;
 	}
 
-	~QueueMSLB()
+	~QueueMSHybrid()
 	{
 	}
 
@@ -43,19 +43,30 @@ public:
 
 	T remove()
 	{
-		T val = 0;
-		LOCK_A(&set->head_lock);
-		queue_node<T>* node = set->head;
-		queue_node<T>* head_new = node->next;
-		if (head_new == NULL) {
-			UNLOCK(&set->head_lock);
-			return 0;
+		NUM_RETRIES();
+		queue_node<T> *next, *head;
+		while(1) {
+			head = set->head;
+			queue_node<T>* tail = set->tail;
+			next = head->next;
+			if (likely(head == set->head)) {
+				if (head == tail) {
+					if (NULL == next) {
+						return 0;
+					}
+					UNUSED void* dummy = CAS_PTR(&set->tail,
+							tail, next);
+				} else {
+					if (CAS_PTR(&set->head, head,next) == head) {
+						break;
+					}
+				}
+			}
+			DO_PAUSE();
 		}
-		val = head_new->item;
-		set->head = head_new;
-		UNLOCK_A(&set->head_lock);
-		release_queue_node(node);
-		return val;
+		T item = next->item;
+		release_queue_node(head);
+		return item;
 	}
 
 	int count()

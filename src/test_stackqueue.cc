@@ -7,6 +7,8 @@
 #include"rapl_read.h"
 #include"ssmem.h"
 #include"queue_ms_lb.h"
+#include"queue_ms_lf.h"
+#include"queue_ms_hybrid.h"
 
 #define ASSERT_SIZE 1
 
@@ -355,14 +357,10 @@ int main(int argc, char**argv)
 			"  -f, --val-pf <int>\n"
 			"        When using detailed profiling, how many values to keep track of.\n"
 			"  -a, --algorithm <name>\n"
-			"        What algorithm to use (LL_LAZY by default).\n"
+			"        What algorithm to use (Q_MS_LB by default).\n"
 			"        Possible options:\n"
-			"        AM_OPTIK,\n"
-			"        LL_LAZY, LL_COPY, LL_COUPLING, LL_HARRIS, LL_HARRIS_OPT\n"
-			"        LL_OPTIK, LL_OPTIK_GL, LL_PUGH, LL_SEQ\n"
-			"        HT_HARRIS, HT_COPY, HT_JAVA, HT_OPTIK, HT_OPTIK_GL\n"
-			"        HT_OPTIK_AM, HT_PUGH\n"
-			"        SL_FRASER, SL_HERLIHY_LB, SL_HERLIHY_LF, SL_OPTIK, SL_SEQ\n"
+			"        Q_MS_LB, Q_MS_LF, Q_MS_H,\n"
+			"        S_GL, S_TREIBER\n"
 			"\n"
 			, argv[0]);
 			exit(0);
@@ -442,9 +440,9 @@ int main(int argc, char**argv)
 
 	StackQueue<sval_t> *set;
 	if (algorithm == Q_MS_LF) {
-		set = new QueueMSLB<sval_t>();
+		set = new QueueMSLF<sval_t>();
 	} else if (algorithm == Q_MS_H) {
-		set = new QueueMSLB<sval_t>();
+		set = new QueueMSHybrid<sval_t>();
 	} else if (algorithm == S_GL) {
 		set = new QueueMSLB<sval_t>();
 	} else if (algorithm == S_TREIBER) {
