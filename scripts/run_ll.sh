@@ -3,7 +3,7 @@
 ds=ll;
 set_cpu=0
 repetitions=3
-duration=2000
+duration=7000
 keep=median
 cores=ppopp
 #ub=BINARIES PLACEMENT
@@ -11,7 +11,8 @@ cores=ppopp
 fixed_file_dat=0
 
 mkdir -p data
-make
+make clean
+make "SET_CPU := 0"
 
 algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS_OPT LL_OPTIK_GL LL_OPTIK LL_PUGH );
 

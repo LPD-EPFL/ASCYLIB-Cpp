@@ -25,6 +25,10 @@ ifeq ($(VERSION),O3)
         CPPFLAGS  += -O3
 endif
 
+ifeq ($(SET_CPU),0)
+        CPPFLAGS += -DNO_SET_CPU
+endif
+
 # Compile with global lock
 ifeq ($(GRANULARITY),GLOBAL_LOCK)
         CPPFLAGS += -DLL_GLOBAL_LOCK
