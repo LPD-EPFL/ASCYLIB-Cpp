@@ -9,6 +9,8 @@
 #include"queue_ms_lb.h"
 #include"queue_ms_lf.h"
 #include"queue_ms_hybrid.h"
+#include"stack_lock.h"
+#include"stack_treiber.h"
 
 #define ASSERT_SIZE 1
 
@@ -308,6 +310,7 @@ int main(int argc, char**argv)
 		{"num-threads",               required_argument, NULL, 'n'},
 		{"range",                     required_argument, NULL, 'r'},
 		{"update-rate",               required_argument, NULL, 'u'},
+		{"put-rate",                  required_argument, NULL, 'p'},
 		{"num-buckets",               required_argument, NULL, 'b'},
 		{"print-vals",                required_argument, NULL, 'v'},
 		{"vals-pf",                   required_argument, NULL, 'f'},
@@ -318,7 +321,7 @@ int main(int argc, char**argv)
 	int i,c;
 	while(1) {
 		i=0;
-		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:b:v:f:a:",
+		c = getopt_long(argc, argv, "hAf:d:i:n:r:s:u:b:v:f:a:p:",
 			long_options, &i);
 		if (c==-1) {
 			break;
@@ -444,9 +447,9 @@ int main(int argc, char**argv)
 	} else if (algorithm == Q_MS_H) {
 		set = new QueueMSHybrid<sval_t>();
 	} else if (algorithm == S_GL) {
-		set = new QueueMSLB<sval_t>();
+		set = new StackLock<sval_t>();
 	} else if (algorithm == S_TREIBER) {
-		set = new QueueMSLB<sval_t>();
+		set = new StackTreiber<sval_t>();
 	} else {
 		set = new QueueMSLB<sval_t>();
 	}

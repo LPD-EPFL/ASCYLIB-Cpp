@@ -13,12 +13,13 @@ SEARCH_ALGORITHMS += hashtable_optik_gl hashtable_optik_arraymap hashtable_pugh
 SEARCH_ALGORITHMS += array_map_optik
 SEARCH_ALGORITHMS += skiplist_fraser skiplist_herlihy_lb skiplist_herlihy_lf
 SEARCH_ALGORITHMS += skiplist_optik skiplist_seq
-STACKQUEUE_ALGORITHMS += queue_ms_lb queue_ms_lf queue_ms_hybrid
+STACKQUEUE_ALGORITHMS := queue_ms_lb queue_ms_lf queue_ms_hybrid
+STACKQUEUE_ALGORITHMS += stack_lock stack_treiber
 SEARCH_AUX_FILES := key_hasher key_max_min
 SEARCH_AUX_FILES += ll_array ll_locked ll_marked ll_simple ll_optik
 SEARCH_AUX_FILES += conc_hashmap_segment
 SEARCH_AUX_FILES += sl_simple sl_marked sl_locked
-STACKQUEUE_AUX_FILES += queue_node
+STACKQUEUE_AUX_FILES += stackqueue_node stackqueue_node_padded
 GC := 1
 
 SRC_DIR := src
