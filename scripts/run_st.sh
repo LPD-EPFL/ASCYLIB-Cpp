@@ -58,8 +58,8 @@ printf "#> = %.2f hours\n" $( echo "$dur_tot/3600" | bc -l );
 
 for ((i=0; i < $num_params; i++))
 do
-    initial=${params_initial[$i]};
-    update=${params_update[$i]};
+    initial=${param_initial};
+    put=${params_put[$i]};
     range=$((2*$initial));
 
     #algos_w=( "${algos[@]/%/_$workload}" )
@@ -74,6 +74,6 @@ do
     fi;
 
     echo "### params -i$initial -p$put / keep $keep of reps $repetitions of dur $duration" | tee data/$out;
-    ./scripts/scalability_rep_simple.sh "$cores" $repetitions $keep "$algos_str" -d$duration -i$initial -p$put \
+    ./scripts/scalability_rep_simple.sh ./bin/test_stackqueue "$cores" $repetitions $keep "$algos_str" -d$duration -i$initial -p$put \
 				 | tee -a data/$out;
 done;

@@ -11,6 +11,9 @@ then
     exit;
 fi;
 
+test_bin=$1;
+shift;
+
 cores=$1;
 shift;
 
@@ -61,7 +64,7 @@ printf "%-8d" 1;
 thr1="";
 for algo in $algos;
 do
-    thr=$($run_script ./bin/test_search -a $algo $params -n1);
+    thr=$($run_script $test_bin -a $algo $params -n1);
     thr1="$thr1 $thr";
     printf "%-13d " $thr;
     # printf "%-8.2f" 100.00;
@@ -84,7 +87,7 @@ do
     do
 	i=$(($i+1));
 	thr1p=$(get_n $i "$thr1");
-	thr=$($run_script ./bin/test_search -a $algo $params -n$c);
+	thr=$($run_script $test_bin -a $algo $params -n$c);
 	printf "%-13d " $thr;
 	# scl=$(echo "$thr/$thr1p" | bc -l);
 	# linear_p=$(echo "100*(1-(($c-$scl)/$c))" | bc -l);
