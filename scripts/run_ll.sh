@@ -3,7 +3,7 @@
 ds=ll;
 set_cpu=0
 repetitions=3
-duration=7000
+duration=2000
 keep=median
 cores=ppopp
 #ub=BINARIES PLACEMENT
