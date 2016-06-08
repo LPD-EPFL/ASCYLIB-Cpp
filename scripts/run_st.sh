@@ -40,10 +40,10 @@ if [[ $increment -gt 1 ]] ; then
 fi
 
 num_tests_cores=$(echo "$cores" | wc -w);
-duration_secs=$(echo $duration/1000 | bc -l);
+duration_secs=$(echo "$duration/1000" | bc -l);
 num_algorithms=${#algos[@]};
 
-dur_tot=$(( $num_algorithms*$num_params*$num_tests_cores*$repetitions*$duration_secs ));
+dur_tot=$( echo "$num_algorithms*$num_params*$num_tests_cores*$repetitions*$duration_secs" | bc -l );
 
 printf "#> $num_algorithms algos, $num_params params, $num_tests_cores cores configurations, $repetitions reps of %.2f sec = %.2f sec\n" $duration_secs $dur_tot;
 printf "#> = %.2f hours\n" $( echo "$dur_tot/3600" | bc -l );

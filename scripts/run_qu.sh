@@ -41,7 +41,7 @@ if [[ $increment -gt 1 ]] ; then
 fi
 
 num_tests_cores=$(echo "$cores" | wc -w);
-duration_secs=$(echo $duration/1000 | bc -l);
+duration_secs=$(echo "$duration/1000" | bc -l);
 num_algorithms=${#algos[@]};
 
 dur_tot=$( echo "$num_algorithms*$num_params*$num_tests_cores*$repetitions*$duration_secs" | bc -l );
