@@ -14,7 +14,7 @@ mkdir -p data
 make clean
 make "SET_CPU := 0"
 
-algos=( LL_LAZY LL_COPY LL_COUPLING LL_HARRIS_OPT LL_OPTIK_GL LL_OPTIK LL_PUGH );
+algos=( LL_LAZY LL_COUPLING LL_HARRIS_OPT LL_OPTIK_GL LL_OPTIK LL_PUGH );
 
 # params_initial=( 128 512 2048 4096 8192 );
 # params_update=( 100 50  20   10   1 );
