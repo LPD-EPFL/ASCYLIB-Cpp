@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ds=ht;
-./scripts/cpp/run.config
+./scripts/run.config
 
 mkdir -p data
 make

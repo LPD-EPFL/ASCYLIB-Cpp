@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ds=ll;
-./scripts/cpp/run.config
+./scripts/run.config
 
 mkdir -p data
 make clean
