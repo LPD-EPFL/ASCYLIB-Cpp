@@ -1,14 +1,7 @@
 #!/bin/bash
 
 ds=ht;
-set_cpu=0
-repetitions=3
-duration=2000
-keep=median
-cores=ppopp
-#ub=BINARIES PLACEMENT
-#uo=DATA PLACEMENT FOLDER
-fixed_file_dat=0
+./scripts/cpp/run.config
 
 mkdir -p data
 make

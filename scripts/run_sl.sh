@@ -1,11 +1,7 @@
 #!/bin/bash
 
 ds=sl;
-set_cpu=0
-repetitions=4
-duration=5000
-keep=median
-fixed_file_dat=0
+./scripts/cpp/run.config
 
 mkdir -p data
 make clean
