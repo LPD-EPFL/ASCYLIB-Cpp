@@ -24,18 +24,19 @@ params_workload=( 0   0   0    2  2    2);
 
 num_params=${#params_initial[*]};
 
+
 max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
-max_cores=$(( $max_cores * 3 / 2 ))
+extra_cores=$(( $max_cores * 3 / 2 ))
 if [[ $max_cores -eq 1 ]] ; then
 	max_cores=4
 fi
-#increment=$(($max_cores/2))
-increment=2
+increment=$(($max_cores/20))
 if [[ $increment -eq 0 ]] ; then
 	increment=1
 fi
+extra_increment=$(($increment*2))
 
-cores=$(seq $increment $increment $max_cores)
+cores="$(seq $increment $increment $max_cores) $(seq $(($max_cores+$extra_increment)) $extra_increment $extra_cores)"
 if [[ $increment -gt 1 ]] ; then
 	cores="1 $cores"
 fi
@@ -49,11 +50,11 @@ dur_tot=$(( $num_algorithms*$num_params*$num_tests_cores*$repetitions*$duration_
 printf "#> $num_algorithms algos, $num_params params, $num_tests_cores cores configurations, $repetitions reps of %.2f sec = %.2f sec\n" $duration_secs $dur_tot;
 printf "#> = %.2f hours\n" $( echo "$dur_tot/3600" | bc -l );
 
-printf "   Continue? [Y/n] ";
-read cont;
-if [ "$cont" = "n" ]; then
-	exit;
-fi;
+#printf "   Continue? [Y/n] ";
+#read cont;
+#if [ "$cont" = "n" ]; then
+#	exit;
+#fi;
 
 #cores=$cores_backup;
 
