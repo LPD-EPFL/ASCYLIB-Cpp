@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ds=qu;
-./scripts/run.config
+. ./scripts/run.config
 
 mkdir -p data
 make clean
@@ -17,21 +17,7 @@ params_nc=( 10 );
 
 num_params=${#params_put[*]};
 
-max_cores=$(grep "processor" /proc/cpuinfo | wc -l)
-extra_cores=$(( $max_cores * 3 / 2 ))
-if [[ $max_cores -eq 1 ]] ; then
-	max_cores=4
-fi
-increment=$(($max_cores/20))
-if [[ $increment -eq 0 ]] ; then
-	increment=1
-fi
-extra_increment=$(($increment*2))
-
-cores="$(seq $increment $increment $max_cores) $(seq $(($max_cores+$extra_increment)) $extra_increment $extra_cores)"
-if [[ $increment -gt 1 ]] ; then
-	cores="1 $cores"
-fi
+. ./scripts/cores.config
 
 num_tests_cores=$(echo "$cores" | wc -w);
 duration_secs=$(echo "$duration/1000" | bc -l);
