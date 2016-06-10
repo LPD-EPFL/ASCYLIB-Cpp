@@ -7,7 +7,9 @@ mkdir -p data
 make clean
 make "SET_CPU := 0"
 
-algos=( SL_FRASER SL_HERLIHY_LB SL_HERLIHY_LF SL_OPTIK );
+# Herlihy LF has bug which sometimes blocks progress, which was also expected in the C version
+#algos=( SL_FRASER SL_HERLIHY_LB SL_HERLIHY_LF SL_OPTIK );
+algos=( SL_FRASER SL_HERLIHY_LB SL_OPTIK );
 
 params_initial=(  1024 16384 65536 1024 16384 65536 );
 params_update=(   40   40    40    40   40    40 );
