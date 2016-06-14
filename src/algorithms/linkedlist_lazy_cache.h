@@ -13,6 +13,7 @@
 #define DEFAULT_ALTERNATE               0
 #define DEFAULT_EFFECTIVE               1
 
+// TODO not functioning correctly yet (test fails)
 
 template <typename K, typename V,
 	typename K_MAX_MIN = KeyMaxMin<K> >
