@@ -30,9 +30,9 @@ ifeq ($(SET_CPU),0)
 endif
 
 ifeq ($(INIT), all)
-        CFLAGS += -DINITIALIZE_FROM_ONE=0
+        CPPFLAGS += -DINITIALIZE_FROM_ONE=0
 else
-        CFLAGS += -DINITIALIZE_FROM_ONE=1
+        CPPFLAGS += -DINITIALIZE_FROM_ONE=1
 endif
 
 # Compile with global lock
