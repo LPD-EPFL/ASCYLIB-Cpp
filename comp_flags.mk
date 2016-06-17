@@ -29,6 +29,13 @@ ifeq ($(SET_CPU),0)
         CPPFLAGS += -DNO_SET_CPU
 endif
 
+ifeq ($(RO_FAIL),0)
+        CFLAGS += -DRO_FAIL=0
+        SUFFIX = _no_ro
+else
+        CFLAGS += -DRO_FAIL=1
+endif
+
 ifeq ($(INIT), all)
         CPPFLAGS += -DINITIALIZE_FROM_ONE=0
 else
