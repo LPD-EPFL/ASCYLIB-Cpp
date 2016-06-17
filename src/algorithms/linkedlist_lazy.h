@@ -7,7 +7,7 @@
 #include "lock_if.h"
 #include "ssmem.h"
 
-#define LAZY_RO_LATEX RO_FAIL
+#define LAZY_RO_FAIL RO_FAIL
 #define DEFAULT_LOCKTYPE                2
 #define DEFAULT_ALTERNATE               0
 #define DEFAULT_EFFECTIVE               1
