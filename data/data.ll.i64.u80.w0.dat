@@ -1,9 +1,0 @@
-### params -i64 -r128 -u80 / keep median of reps 3 of dur 2000
-# Result from 3 repetitions: median
-#       LL_LAZY      LL_COPY      LL_COUPLING  LL_HARRIS    LL_HARRIS_OPT LL_OPTIK     LL_PUGH      
-#cores  throughput   throughput   throughput   throughput   throughput   throughput   throughput   
-1       8897020      1770628      2277146      5446848      7187406      9494048      9386152      
-2       7443330      934117       845929       7663598      8793244      7313040      7655646      
-4       8228730      956240       1134855      10932007     11344326     6562919      9069269      
-6       7050404      772542       1072630      10238326     10240407     5851849      7814382      
-8       7138586      694823       999608       10565638     10305808     5481280      7800093      
