@@ -130,7 +130,7 @@ class LinkedListLazy : public Search<K,V>
 				curr = curr->next;
 			}
 			UPDATE_TRY();
-#if LAZY_RO_RAIL == 1
+#if LAZY_RO_FAIL == 1
 			if (curr->key != key) {
 				return false;
 			}
