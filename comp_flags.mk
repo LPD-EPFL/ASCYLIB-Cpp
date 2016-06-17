@@ -30,10 +30,10 @@ ifeq ($(SET_CPU),0)
 endif
 
 ifeq ($(RO_FAIL),0)
-        CFLAGS += -DRO_FAIL=0
+        CPPFLAGS += -DRO_FAIL=0
         SUFFIX = _no_ro
 else
-        CFLAGS += -DRO_FAIL=1
+        CPPFLAGS += -DRO_FAIL=1
 endif
 
 ifeq ($(INIT), all)
