@@ -186,13 +186,16 @@ ASCYLIB accepts various compilation parameters. Please refer to the `COMPILE` fi
 Adding an algorithm
 -------------------
 To add an algorithm, preferably implement (inherit from) one of the interfaces/abstract classes relevant to the data structure you are implementing (`src/search.h` or `src/stack_queue.h`).  We also recommend you add it to:
+
 1. The relevant test file (`src/test_search.cc` or `src/test_stackqueue.cc`). This means adding the algorithm to:
-	* The head of the file, including the relevant source header (_algorithm_.h)
-	* The `algorithms` enum near the head of the file.
-	* The `parse_algorithm` function starting around line 123, which will parse the algorithm quick name from the command line option (`-a`).
-	* The list of algorithms in the help description, around line 550.
-	* The actual initialization of the appropriate data structure, starting around line 655.
+  * The head of the file, including the relevant source header (_algorithm_.h)
+  * The `algorithms` enum near the head of the file.
+  * The `parse_algorithm` function starting around line 123, which will parse the algorithm quick name from the command line option (`-a`).
+  * The list of algorithms in the help description, around line 550.
+  * The actual initialization of the appropriate data structure, starting around line 655.
+
 2. The Makefile at the root of the project, either under `SEARCH_ALGORITHMS` or `STACKQUEUE_ALGORITHMS`.  Add the name of the `.h` file without the extension, as it will be added later.  This ensures that a modification of your file causes recompilation of the test file.
+
 3. Don't forget to include any aux files (extra classes, or other types of data nodes) you may create to this file as well, to also ensure that the test files are recompiled if they change.
 
 Tests
