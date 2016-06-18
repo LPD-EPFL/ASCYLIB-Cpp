@@ -73,13 +73,13 @@ endif
 # Platform dependent settings
 #############################
 #
-# GCC thread-local storage requires "significant 
+# GCC thread-local storage requires "significant
 # support from the linker (ld), dynamic linker
 # (ld.so), and system libraries (libc.so and libpthread.so), so it is
 # not available everywhere." source: GCC-doc.
 #
-# pthread_spinlock is replaced by pthread_mutex 
-# on MacOS X, as it might not be supported. 
+# pthread_spinlock is replaced by pthread_mutex
+# on MacOS X, as it might not be supported.
 # Comment LOCK = MUTEX below to enable.
 
 ifndef OS_NAME
@@ -114,6 +114,69 @@ ifeq ($(shell dmesg | grep "No NUMA" | wc -l), 0)
         endif
 endif
 
+#################################
+# Management PC specific settings
+#################################
+
+ifndef PC_NAME
+        PC_NAME = $(shell uname -n)
+endif
+
+ifeq ($(PC_NAME), parsasrv1.epfl.ch)
+    PLATFORM_KNOWN = 1
+    OS = Linux
+    CC = $(TILERA_CC)
+    LDFLAGS += -ltmc
+    PLATFORM_NUMA = 1
+    ARCH = tile
+    ARCH_NAME = tile
+endif
+
+ifeq ($(PC_NAME), lpd48core)
+    PLATFORM_KNOWN = 1
+    CC = gcc-4.8
+    CPPFLAGS += -DOPTERON -DPLATFORM_MCORE
+    PLATFORM_NUMA = 1
+endif
+ifeq ($(PC_NAME), lpdxeon2680)
+    PLATFORM_KNOWN = 1
+    CPPFLAGS += -DLPDXEON -DPLATFORM_MCORE
+    PLATFORM_NUMA = 1
+endif
+
+ifeq ($(PC_NAME), lpdpc34)
+    PLATFORM_KNOWN = 1
+    CPPFLAGS += -DHASWELL
+    PLATFORM_NUMA = 0
+endif
+
+ifeq ($(PC_NAME), lpdpc4)
+    PLATFORM_KNOWN = 1
+    CPPFLAGS += -DLPDPC4
+    PLATFORM_NUMA = 0
+endif
+
+ifeq ($(PC_NAME), diassrv8)
+    PLATFORM_KNOWN = 1
+    CPPFLAGS += -DXEON -DPLATFORM_MCORE
+    PLATFORM_NUMA = 1
+endif
+
+ifeq ($(PC_NAME), maglite)
+    PLATFORM_KNOWN = 1
+    CC = $(SOLARIS_CC1)
+    CFLAGS += -DMAGLITE
+endif
+
+ifeq ($(PC_NAME), ol-collab1)
+    PLATFORM_KNOWN = 1
+ifdef LOCK
+    LOCK = TICKET
+endif
+    CC = $(SOLARIS_CC2)
+    CPPFLAGS += -DT44
+endif
+
 ifneq ($(PLATFORM_KNOWN), 1)
         CPPFLAGS += -DDEFAULT
         CORE_NUM ?= $(shell nproc)
@@ -130,7 +193,7 @@ ifneq ($(PLATFORM_KNOWN), 1)
         CPPFLAGS += -DCORE_NUM=${CORE_NUM}
         CPPFLAGS += -DFREQ_GHZ=${FREQ_GHZ}
 endif
- 
+
 #################################
 # Architecture dependent settings
 #################################
