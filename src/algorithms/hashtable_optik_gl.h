@@ -12,6 +12,7 @@
 
 #include "search.h"
 #include "linkedlist_optik.h"
+#include "key_hasher.h"
 
 template<typename K, typename V,
 	typename KEY_HASHER = KeyHasher<K> >

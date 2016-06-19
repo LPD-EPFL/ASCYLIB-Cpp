@@ -6,6 +6,16 @@
 
 #include"search.h"
 #include"key_hasher.h"
+#include"linkedlist_pugh.h"
+
+#define DEFAULT_MOVE                    0
+#define DEFAULT_SNAPSHOT                0
+#define DEFAULT_LOAD                    1
+#define DEFAULT_ELASTICITY              1
+#define DEFAULT_ALTERNATE               0
+#define DEFAULT_EFFECTIVE               1
+
+#define MAXHTLENGTH                     65536
 
 template <typename K, typename V,
 	 typename KEY_HASHER = KeyHasher<K> >

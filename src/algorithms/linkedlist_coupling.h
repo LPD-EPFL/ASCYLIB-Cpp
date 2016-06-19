@@ -1,6 +1,8 @@
 #ifndef _LINKEDLIST_COUPLING_H_
 #define _LINKEDLIST_COUPLING_H_
 
+#include <stdlib.h>
+#include "lock_if.h"
 #include "key_max_min.h"
 #include "search.h"
 #include "ll_marked.h"

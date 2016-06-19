@@ -6,6 +6,7 @@
 #include "search.h"
 #include "key_max_min.h"
 #include "ll_simple.h"
+#include "lock_if.h"
 
 template <typename K, typename V,
 	 typename K_MAX_MIN = KeyMaxMin<K> >

@@ -46,7 +46,7 @@ class LinkedListCopy : public Search<K,V>
 	int insert(K key, V value)
 	{
 #if CPY_ON_WRITE_READ_ONLY_FAIL == 1
-		if (search(key) == 0) {
+		if (search(key) != 0) {
 			return 0;
 		}
 #endif

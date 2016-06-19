@@ -3,6 +3,7 @@
 
 #include<stdlib.h>
 #include<malloc.h>
+#include"ssmem.h"
 
 extern __thread ssmem_allocator_t* alloc;
 

@@ -4,6 +4,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include"lock_if.h"
+#include"ssmem.h"
 
 extern __thread ssmem_allocator_t* alloc;
 
