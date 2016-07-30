@@ -126,6 +126,7 @@ ifeq ($(PC_NAME), parsasrv1.epfl.ch)
     PLATFORM_KNOWN = 1
     OS = Linux
     CC = $(TILERA_CC)
+    $(error C++ compiler must be configured!! - CXX make variable)
     LDFLAGS += -ltmc
     PLATFORM_NUMA = 1
     ARCH = tile
@@ -165,6 +166,7 @@ endif
 ifeq ($(PC_NAME), maglite)
     PLATFORM_KNOWN = 1
     CC = $(SOLARIS_CC1)
+    $(error C++ compiler must be configured!! - CXX make variable)
     CFLAGS += -DMAGLITE
 endif
 
@@ -174,6 +176,7 @@ ifdef LOCK
     LOCK = TICKET
 endif
     CC = $(SOLARIS_CC2)
+    $(error C++ compiler must be configured!! - CXX make variable)
     CPPFLAGS += -DT44
 endif
 
